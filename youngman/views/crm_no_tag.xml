@@ -1,0 +1,28 @@
+<odoo>
+  <data>
+      <record  model="ir.ui.view" id="crm_lead_no_tag_inherit">
+          <field name="name">crm.lead.notag.inherit</field>
+          <field name="model">crm.lead</field>
+          <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+          <field name="arch" type="xml">
+              <field name="tag_ids" position="attributes">
+                  <attribute name="options">
+                      {'color_field': 'color', 'no_create_edit': True, 'no_create': True, 'create_edit':False, 'create':False}
+                  </attribute>
+              </field>
+          </field>
+      </record>
+
+      <record  model="ir.ui.view" id="crm_opportunity_inherit">
+          <field name="name">crm.opportunity.inherit</field>
+          <field name="model">crm.lead</field>
+          <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+          <field name="arch" type="xml">
+              <field name="tag_ids" position="after">
+                    <field name="job_order" attrs="{'invisible': [('type','=', 'lead')]}"/>
+              </field>
+          </field>
+      </record>
+
+  </data>
+</odoo>

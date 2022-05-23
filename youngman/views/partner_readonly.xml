@@ -1,0 +1,38 @@
+<odoo>
+    <data>
+
+        <record id="view_partner_form_in_beta_inherit" model="ir.ui.view">
+            <field name="name">res.partner.youngman.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <field name="vat" position="after">
+                    <field name="in_beta" readonly="1"/>
+                </field>
+                <field name="category_id" position="after">
+                    <field name="channel_tag_ids" widget="many2many_tags" placeholder="Channel Tags..." attrs="{'invisible': [('is_company','=', False)]}"/>
+                    <field name="bd_tag_ids" widget="many2many_tags" placeholder="BD Tags..." attrs="{'invisible': [('is_company','=', False)]}"/>
+                </field>
+            </field>
+        </record>
+
+        <record id="view_partner_form_vat_inherit" model="ir.ui.view">
+            <field name="name">res.partner.vat.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <field name="company_type"  position="attributes">
+                    <attribute name="attrs">{'readonly': [('in_beta','=',True)]}</attribute>
+                </field>
+                <field name="vat" position="attributes">
+                    <attribute name="attrs">{'readonly': [('is_company','=',True),('in_beta','=',True)]}</attribute>
+                </field>
+                <xpath expr="//field[@id='company']" position="attributes">
+                    <attribute name="attrs">{'required' : [('type', '=', 'contact'),('is_company', '=', True)], 'invisible': [('is_company','=', False)], 'readonly': [('in_beta','=',True)]}</attribute>
+                </xpath>
+            </field>
+        </record>
+
+
+    </data>
+</odoo>
