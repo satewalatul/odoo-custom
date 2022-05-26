@@ -20,7 +20,7 @@
     'version': '20.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','crm', 'base_vat', 'odoo-addon-jobsites'],
+    'depends': ['base','crm', 'base_vat', 'jobsites'],
 
     # always loaded
     'data': [
