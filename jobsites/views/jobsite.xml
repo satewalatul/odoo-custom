@@ -7,7 +7,7 @@
 			<field name="arch" type="xml">
 				<tree>
 					<field name="name"/>
-					<field name="type"/>
+					<field name="siteteam"/>
 				</tree>
 			</field>
 		</record>
@@ -42,7 +42,7 @@
 
 							<group>
 								<field name="name"/>
-								<field name="type"/>
+								<field name="siteteam"/>
 								<field name="note"/>
 								<field name="user_id" position="attributes">
 									<attribute name="options">{'no_create_edit': True, 'no_create': True}</attribute>
@@ -96,16 +96,16 @@
 			<field name="arch" type="xml">
 				<search>
 					<field name="name" filter_domain="[('name', 'ilike', self)]"></field>
-					<filter name="filter_IW" string="IWM" domain="[('type', '=', 'IWM')]"></filter>
-					<filter name="filter_T" string="Transport" domain="[('type', '=', 'T')]"></filter>
-					<filter name="filter_FR" string="FR" domain="[('type', '=', 'FR')]"></filter>
-					<filter name="filter_General" string="General" domain="[('type', '=', 'General')]"></filter>
-<!--					<filter name="filter_BF" string="B&ampF" domain="[('type', '=', 'B&ampF')]"></filter>-->
+					<filter name="filter_IW" string="IWM" domain="[('siteteam', '=', 'IWM')]"></filter>
+					<filter name="filter_T" string="Transport" domain="[('siteteam', '=', 'T')]"></filter>
+					<filter name="filter_FR" string="FR" domain="[('siteteam', '=', 'FR')]"></filter>
+					<filter name="filter_General" string="General" domain="[('siteteam', '=', 'General')]"></filter>
+<!--					<filter name="filter_BF" string="B&ampF" domain="[('siteteam', '=', 'B&ampF')]"></filter>-->
 					<separator/>
 					<filter name="filter_archived" string="Archived" domain="[('active', '=', False)]"></filter>
 					<group expand="0" string="Group By">
-						<filter string="Type" name="group_by_type" context="{'group_by':'type'}"></filter>
-						<filter string="Status" name="group_by_status" context="{'group_by':'type'}"></filter>
+						<filter string="Team" name="group_by_type" context="{'group_by':'siteteam'}"></filter>
+						<filter string="Status" name="group_by_status" context="{'group_by':'siteteam'}"></filter>
 					</group>
 				</search>
 			</field>

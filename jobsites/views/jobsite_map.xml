@@ -9,7 +9,7 @@
                 <field name="latitude"/>
                 <field name="longitude"/>
                 <field name="name"/>
-                <field name="type"/>
+                <field name="siteteam"/>
                 <field name="status"/>
                 <field name="user_id"/>
                 <templates>
@@ -19,7 +19,7 @@
                                 <strong class="o_kanban_record_title"><span><field name="name"/></span></strong>
                             </div>
                             <div>
-                                <field name="type"/>
+                                <field name="siteteam"/>
                             </div>
                             <div class="o_kanban_record_bottom">
                                 <div class="oe_kanban_bottom_left">

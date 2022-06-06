@@ -9,7 +9,7 @@ class Jobsite(models.Model):
     _description = "Jobsite"
 
     name = fields.Char(string='Site Name', required=True, translate=True, tracking=True)
-    type = fields.Many2one(comodel_name='crm.team', string='Type')
+    siteteam = fields.Many2one(comodel_name='crm.team', string='Team')
 
     status = fields.Selection([
         ('Virgin', 'Virgin'),
