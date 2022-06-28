@@ -1,16 +1,26 @@
-import logging
+import traceback
 
 from odoo import api, fields, models
+import requests
+import logging
+import json
+_logger = logging.getLogger(__name__)
+
+class JobsiteStage(models.Model):
+    _name = 'jobsite_stage'
+    stage_id = fields.Many2one(string='Stage')
+    name = fields.Char(string="Name")
 
 
 class Jobsite(models.Model):
     _name = 'jobsite'
     _inherit = ['mail.thread', 'mail.activity.mixin', 'format.address.mixin']
     _description = "Jobsite"
-
     name = fields.Char(string='Site Name', required=True, translate=True, tracking=True)
     siteteam = fields.Many2one(comodel_name='crm.team', string='Team')
-
+    vl_date = fields.Date('VL Date', help="Visit Lead Due Date (VL Date)")
+    godown_name = fields.Char(string='Godown', translate=True, tracking=True)
+    beta_godown_id = fields.Integer('Beta Godown Id')
     status = fields.Selection([
         ('Virgin', 'Virgin'),
         ('Active', 'Active'),
@@ -27,6 +37,7 @@ class Jobsite(models.Model):
                                domain="[('country_id', '=?', country_id)]")
     country_id = fields.Many2one('res.country', string='Country', ondelete='restrict')
     country_code = fields.Char(related='country_id.code', string="Country Code")
+    stage_id = fields.Many2one("jobsite_stage", string="Stage")
     latitude = fields.Float(string='Geo Latitude', digits=(10, 7))
     longitude = fields.Float(string='Geo Longitude', digits=(10, 7))
     marker_color = fields.Char(string='Marker Color', default='red', required=True)
@@ -67,8 +78,43 @@ class Jobsite(models.Model):
 
         return True
 
-    # class ResPartner(models.Model):
-    #     _inherit = 'res.partner'
-    #
-    #     marker_color = fields.Char(
-    #         string='Marker Color', default='red', required=True)
+    @api.onchange('zip')
+    def sendToBeta(self):
+        if(self.zip!=False):
+            nearest_godown = self._get_nearest_godown(self.zip)
+            self.godown_name = list(nearest_godown.json()[0].values())[0]
+            self.beta_godown_id = list(nearest_godown.json()[0].values())[1]
+            # self._send_nearest_godown_id(self.beta_godown_id)
+
+    def _get_nearest_godown(self, pincode):
+        endpoint = "https://youngmanbeta.com/nearestGodown?pincode=" + str(pincode)
+        try:
+            response = requests.get(endpoint, verify=False)
+            return response
+        except requests.HTTPError:
+            error_msg = _("Could not fetch nearest Godown. Remote server returned status ???")
+            raise self.env['res.config.settings'].get_config_warning(error_msg)
+        except Exception as e:
+            error_msg = _("Some error occurred while fetching nearest Godown")
+            raise self.env['res.config.settings'].get_config_warning(error_msg)
+        finally:
+            traceback.format_exc()
+
+    # def _send_nearest_godown(self, id):
+    #     endpoint = "https://youngmanbeta.com/nearestGodown?pincode=" + str(id)
+    #     try:
+    #         response = requests.get(endpoint, verify=False)
+    #     except requests.HTTPError:
+    #         error_msg = _("Could not fetch nearest Godown. Remote server returned status ???")
+    #         raise self.env['res.config.settings'].get_config_warning(error_msg)
+    #     except Exception as e:
+    #         error_msg = _("Some error occurred while fetching nearest Godown")
+    #         raise self.env['res.config.settings'].get_config_warning(error_msg)
+    #     finally:
+    #         traceback.format_exc()
+
+# class ResPartner(models.Model):
+#     _inherit = 'res.partner'
+#
+#     marker_color = fields.Char(
+#         string='Marker Color', default='red', required=True)
