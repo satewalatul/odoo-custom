@@ -17,6 +17,11 @@ class Jobsite(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin', 'format.address.mixin']
     _description = "Jobsite"
     name = fields.Char(string='Site Name', required=True, translate=True, tracking=True)
+
+    _sql_constraints = [
+        ('name_uniq', 'unique (name)', 'Jobsite Already Exists'),
+    ]
+
     siteteam = fields.Many2one(comodel_name='crm.team', string='Team')
     vl_date = fields.Date('VL Date', help="Visit Lead Due Date (VL Date)")
     godown_name = fields.Char(string='Godown', translate=True, tracking=True)
