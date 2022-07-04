@@ -54,21 +54,21 @@ class ProductTemplateInherit(models.Model):
     )
 
 
-class SaleOrderLineInherit(models.Model):
-    _inherit = 'sale.order.line'
-    _description = 'sale.order.line'
-
-    @api.onchange('price_unit')
-    def min_price(self):
-        if self.order_id.below_min_price:
-            return
-
-        product_id = self.product_id
-        unit_price = self.env['product.product'].search([('id', '=', product_id.id)], limit=1).list_price
-        current_price = self.price_unit
-        if current_price < unit_price:
-            self.price_unit = self._origin.price_unit
-            return {
-                'warning': {'title': 'Warning',
-                            'message': 'Current Price < Unit Price', },
-            }
+# class SaleOrderLineInherit(models.Model):
+#     _inherit = 'sale.order.line'
+#     _description = 'sale.order.line'
+#
+#     @api.onchange('price_unit')
+#     def min_price(self):
+#         if self.order_id.below_min_price:
+#             return
+#
+#         product_id = self.product_id
+#         unit_price = self.env['product.product'].search([('id', '=', product_id.id)], limit=1).list_price
+#         current_price = self.price_unit
+#         if current_price < unit_price:
+#             self.price_unit = self._origin.price_unit
+#             return {
+#                 'warning': {'title': 'Warning',
+#                             'message': 'Current Price < Unit Price', },
+#             }
