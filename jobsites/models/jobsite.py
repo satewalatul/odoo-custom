@@ -83,27 +83,27 @@ class Jobsite(models.Model):
 
         return True
 
-    # @api.onchange('zip')
-    # def sendToBeta(self):
-    #     if(self.zip!=False):
-    #         nearest_godown = self._get_nearest_godown(self.zip)
-    #         self.godown_name = list(nearest_godown.json()[0].values())[0]
-    #         self.beta_godown_id = list(nearest_godown.json()[0].values())[1]
-    #         # self._send_nearest_godown_id(self.beta_godown_id)
+    @api.onchange('zip')
+    def sendToBeta(self):
+        if(self.zip!=False):
+            nearest_godown = self._get_nearest_godown(self.zip)
+            self.godown_name = list(nearest_godown.json()[0].values())[0]
+            self.beta_godown_id = list(nearest_godown.json()[0].values())[1]
+            # self._send_nearest_godown_id(self.beta_godown_id)
 
-    # def _get_nearest_godown(self, pincode):
-    #     endpoint = "https://youngmanbeta.com/nearestGodown?pincode=" + str(pincode)
-    #     try:
-    #         response = requests.get(endpoint, verify=False)
-    #         return response
-    #     except requests.HTTPError:
-    #         error_msg = _("Could not fetch nearest Godown. Remote server returned status ???")
-    #         raise self.env['res.config.settings'].get_config_warning(error_msg)
-    #     except Exception as e:
-    #         error_msg = _("Some error occurred while fetching nearest Godown")
-    #         raise self.env['res.config.settings'].get_config_warning(error_msg)
-    #     finally:
-    #         traceback.format_exc()
+    def _get_nearest_godown(self, pincode):
+        endpoint = "https://youngmanbeta.com/nearestGodown?pincode=" + str(pincode)
+        try:
+            response = requests.get(endpoint, verify=False)
+            return response
+        except requests.HTTPError:
+            error_msg = _("Could not fetch nearest Godown. Remote server returned status ???")
+            raise self.env['res.config.settings'].get_config_warning(error_msg)
+        except Exception as e:
+            error_msg = _("Some error occurred while fetching nearest Godown")
+            raise self.env['res.config.settings'].get_config_warning(error_msg)
+        finally:
+            traceback.format_exc()
 
 
 
