@@ -25,6 +25,7 @@ class Jobsite(models.Model):
     siteteam = fields.Many2one(comodel_name='crm.team', string='Team')
     vl_date = fields.Date('VL Date', help="Visit Lead Due Date (VL Date)")
     godown_name = fields.Char(string='Godown', translate=True, tracking=True)
+    # godown_name = fields.Selection(sendToBeta, string='Godown', default='0')
     beta_godown_id = fields.Integer('Beta Godown Id')
     status = fields.Selection([
         ('Virgin', 'Virgin'),
@@ -87,9 +88,16 @@ class Jobsite(models.Model):
     def sendToBeta(self):
         if(self.zip!=False):
             nearest_godown = self._get_nearest_godown(self.zip)
+            # godowns_name = []
+            # godowns_id =[]
+            # n=len(nearest_godown)
+            # for i in range(n):
+            #     data = nearest_godown[i]
+            #     godowns_name.append((i, data['godown_name']))
+            #     godowns_id.append((i, data['godown_id']))
+            # return godowns_name
             self.godown_name = list(nearest_godown.json()[0].values())[0]
             self.beta_godown_id = list(nearest_godown.json()[0].values())[1]
-            # self._send_nearest_godown_id(self.beta_godown_id)
 
     def _get_nearest_godown(self, pincode):
         endpoint = "https://youngmanbeta.com/nearestGodown?pincode=" + str(pincode)

@@ -7,9 +7,12 @@
 			</div>
 			<div class="row">
 				<strong>Customer Name: </strong><span t-field="doc.partner_id.name"/><br/>
+				<strong>Pickup Date: </strong><span t-field="doc.pickup_date"/><br/>
 				<strong>Sub Customer GST: </strong><span t-field="doc.partner_id.vat"/><br/>
 				<strong>Quotation Number: </strong><span t-field="doc.name"/><br/>
 				<strong>Quotation Date: </strong><span t-field="doc.date_order" t-options='{"widget": "date"}'/><br /><hr/>
+
+
 			</div>
 
 			<table class="table table-sm o_main_table">
@@ -35,8 +38,8 @@
 						</td>
 						<td name="td_billing_addr">
 							<span t-field="doc.billing_address"/>
-							<span t-field="doc.state_id.name"/>
-							<span t-field="doc.zip"/>
+							<span t-field="doc.billing_state_id.name"/>
+							<span t-field="doc.billing_zip"/>
 						</td>
 					</tr>
                 </tbody>
@@ -93,8 +96,8 @@
 				<p style="text-align:justify">Kindly issue a formal <strong>Work Order</strong> in the name of</p>
 				</li>
 				<li>
-				<p style="text-align:justify"><strong>YOUNGMAN INDIA PRIVATE LTD</strong><br />
-				<strong>Youngman India Private Limited, Shed No. 9-30/2/1, Vijetha Garden, VPO Muthangi, Patancheru, Sangareddy, Telangana- 502319 GSTIN: 36AAACY4840M1ZY</strong></p>
+				<p style="text-align:justify"><strong><span t-field="doc.godown.name"/></strong><br />
+				<strong><span t-field="doc.jobsite_id.street"/><![CDATA[&nbsp;]]><span t-field="doc.jobsite_id.street2"/><![CDATA[&nbsp;]]><br /><span t-field="doc.jobsite_id.city"/><![CDATA[&nbsp;]]><span t-field="doc.jobsite_id.state_id"/><![CDATA[&nbsp;]]><span t-field="doc.jobsite_id.zip"/><![CDATA[&nbsp;]]><span t-field="doc.jobsite_id.country_id"/><br />GSTIN: <span t-field="doc.partner_id.vat"/></strong></p>
 				</li>
 				<li>
 				<p style="text-align:justify"><strong>One Month Advance</strong> is required and will be adjusted against the last bill of rental.</p>

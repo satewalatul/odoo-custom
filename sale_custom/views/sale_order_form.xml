@@ -14,23 +14,32 @@
                     <field name="jobsite_id" position="attributes">
                         <attribute name="options">{'no_create_edit': True, 'no_create': True, 'create_edit':False, 'create':False}</attribute>
                     </field>
-
-
+                    <field name="godown"></field>
                     <field name="billing_address"></field>
-                    <field name="state_id"></field>
-                    <field name="country_id"></field>
-                    <field name="zip"></field>
+                    <field name="billing_state_id"></field>
+                    <field name="billing_country_id"></field>
+                    <field name="billing_zip"></field>
+
+                    <field name="delivery_address"></field>
+                    <field name="delivery_state_id"></field>
+                    <field name="delivery_country_id"></field>
+                    <field name="delivery_zip"></field>
+
                     <field name="freight_amount"></field>
-                    <field name="pickup_date"/>
                     <field name="delivery_date"/>
+                    <field name="pickup_date"/>
                     <field name="security_amount"/>
                     <field name="freight_paid_by"/>
                     <field name="price_type"/>
                     <field name="below_min_price"/>
+                    <field name="purchaser_phone"/>
+                    <field name="purchaser_name"/>
+                    <field name="purchaser_email"/>
+
                     <div>
                         <field name="otp" attrs="{'invisible': [('below_min_price', '=', False)]}"/>
-                        <button name="request_otp" type="object" string="Request OTP"/>
-                        <button name="verify_otp" type="object" string="Verify OTP"/>
+                        <button name="request_otp" type="object" string="Request OTP" attrs="{'invisible': [('below_min_price', '=', False)]}"/>
+                        <button name="verify_otp" type="object" string="Verify OTP" attrs="{'invisible': [('below_min_price', '=', False)]}"/>
                     </div>
                 </field>
 
@@ -42,6 +51,7 @@
                     <field name="currency_id" invisible="1"/>
                     <field name="tax_country_id" invisible="1"/>
                     <field name="payment_term_id" invisible="1"/>
+
                 </xpath>
 
             </field>

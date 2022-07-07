@@ -3,10 +3,12 @@
 from odoo import models, fields, api
 
 import logging
+import requests
 from odoo import api, models
+import traceback
+from datetime import datetime
 
 _logger = logging.getLogger(__name__)
-
 
 class SaleOrderInherit(models.Model):
     _name = 'sale.order'
@@ -15,32 +17,118 @@ class SaleOrderInherit(models.Model):
     jobsite_id = fields.Many2one(
         'jobsite', string='Site Name', required=True, index=True, tracking=10,
         help="Linked site (optional). You can find a site by its Name.")
+
+    # Billing Address
     billing_address = fields.Char(string="Billing Address", required=True)
-    state_id = fields.Many2one("res.country.state", string='Billing State', ondelete='restrict',
-                               domain="[('country_id', '=?', country_id)]")
-    country_id = fields.Many2one('res.country', string='Billing Country', ondelete='restrict')
-    zip = fields.Char(string='Pincode', change_default=True)
+    billing_state_id = fields.Many2one("res.country.state", string='Billing State', ondelete='restrict',
+                               domain="[('country_id', '=', billing_country_id)]")
+    billing_country_id = fields.Many2one('res.country', string='Billing Country', ondelete='restrict')
+    billing_zip = fields.Char(string='Billing Pincode', change_default=True)
+
+
+    # Delivery Address
+    delivery_address = fields.Char(string="Delivery Address", required=True)
+    delivery_state_id = fields.Many2one("res.country.state", string='Delivery State', ondelete='restrict',
+                               domain="[('country_id', '=', delivery_country_id)]")
+    delivery_country_id = fields.Many2one('res.country', string='Delivery Country', ondelete='restrict')
+    delivery_zip = fields.Char(string='Delivery Pincode', change_default=True)
+
+
     pickup_date = fields.Date('Pickup Date', required=True)
+    godown = fields.Many2one("jobsite", string='Godown', ondelete='restrict',
+                               domain="[('id', '=', jobsite_id)]")
+
+
     delivery_date = fields.Date('Delivery Date', required=True)
     security_amount = fields.Float(string="Security Amount", required=True)
     freight_amount = fields.Float(string="Freight Amount", required=True, default=0.0)
     freight_paid_by = fields.Selection([
-        ('paid_by_1', 'It has been agreed 1st Dispatch & Final Pickup will be done by Youngman')],
+        ('freight_type1', 'It has been agreed 1st Dispatch and final Pickup will be done by Youngman'),
+        ('freight_type2', 'It has been agreed 1st Dispatch will be done by Youngman and final Pickup will be done by Customer on his cost'),
+        ('freight_type3', 'It has been agreed 1st Dispatch will be done by Customer on his cost and final Pickup would be done by Youngman'),
+        ('freight_type4', 'It has been agreed 1st Dispatch will be done by Customer on his cost and final Pickup is already paid by Customer'),
+        ('freight_type5', 'It has been agreed 1st Dispatch and final Pickup will be done by Customer on his cost')],
         string="Freight To Be Paid By : ",
-        required=True, default='paid_by_1')
+        required=True, default='freight_type1')
     price_type = fields.Selection([
         ('daily', 'Daily'),
         ('monthly', 'Monthly')],
         string="Price Type",
-        required=True, default='daily')
+        required=True, default='monthly')
+    purchaser_phone = fields.Integer(string='Purchaser Contact Phone', required=True)
+    purchaser_name = fields.Many2one("res.partner", string='Purchaser Name', domain="[('parent_id', '=', partner_id),('category_id','ilike','purchaser'),('phone','ilike',purchaser_phone)]")
+    purchaser_email = fields.Many2one("res.partner", string='Purchaser Email', domain="[('parent_id', '=', partner_id),('category_id','ilike','purchaser'),('phone','ilike',purchaser_phone)]")
     below_min_price = fields.Boolean('Below Min Price', default=False)
-    otp = fields.Integer(string='OTP')
+    otp = fields.Integer(string='OTP',store=False)
+    otp_verified = fields.Boolean(string='OTP',store=False, default=False) # TODO compute field should be equal to
+
+    @api.onchange('jobsite_id')
+    def get_delivery_address(self):
+        if(self.jobsite_id!=False):
+            self.delivery_address = self.jobsite_id.street
+            self.delivery_state_id = self.jobsite_id.state_id
+            self.delivery_country_id = self.jobsite_id.country_id
+            self.delivery_zip = self.jobsite_id.zip
+
+    @api.onchange('partner_id')
+    def get_delivery_address(self):
+        if (self.partner_id != False):
+            self.billing_address = self.partner_id.street
+            self.billing_state_id = self.partner_id.state_id
+            self.billing_country_id = self.partner_id.country_id
+            self.billing_zip = self.partner_id.zip
+
 
     def verify_otp(self):
-        return
+        otp = self._generate_otp()
+        if self.otp == otp:
+            self.below_min_price = True
+            #self.otp_verified = True
+            return {
+                'warning': {'title': 'OTP Verified',
+                            'message': 'OTP has been verified.', },
+            }
+        else:
+            return {
+                'warning': {'title': 'Warning',
+                            'message': 'OTP did not match. Please try again.', },
+            }
 
     def request_otp(self):
-        return
+        api_key = self.env['ir.config_parameter'].sudo().get_param('ym_sms.api_key')
+        endpoint = self.env['ir.config_parameter'].sudo().get_param('ym_sms.url')
+        sender = self.env['ir.config_parameter'].sudo().get_param('ym_sms.sender')
+        number = self.env['ir.config_parameter'].sudo().get_param('ym_sms.sales_head_contact')
+
+        otp = self._generate_otp()
+
+        url = "%s?apikey=%s&text=OTP:- %s Youngman India Pvt. Ltd.&mobileno=%s&sender=%s" % (endpoint, api_key, str(otp), number, sender)
+
+        try:
+            response = requests.request("POST", url, headers={}, data={})
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as err:
+            tb = traceback.format_exc()
+            _logger.error(tb.print_exc())
+            return {
+                'warning': {'title': 'Warning',
+                            'message': 'Could not send OTP', },
+            }
+
+        return {
+            'info': {'title': 'Warning',
+                        'message': 'Could not send OTP', },
+        }
+
+    def _generate_otp(self):
+        now = datetime.now()
+
+        code = now.year * now.month * now.day * now.hour * now.minute
+        code = str(code * 1000000)
+
+        return code[:6]
+
+
 
 class ProductTemplateInherit(models.Model):
     _name = 'product.template'
@@ -52,7 +140,6 @@ class ProductTemplateInherit(models.Model):
         digits='Product Price',
         groups="base.group_user",
     )
-
 
 class SaleOrderLineInherit(models.Model):
     _inherit = 'sale.order.line'

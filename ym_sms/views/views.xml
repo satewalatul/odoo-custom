@@ -1,0 +1,64 @@
+<odoo>
+
+    <record id="res_config_settings_view_form_ym_sms" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.crm.ym_sms</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="10"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('settings')]" position="inside">
+                <div class="app_settings_block" data-string="SMS" string="SMS" data-key="ym_sms">
+                    <h2>SMS Management</h2>
+                    <div class="row mt16 o_settings_container">
+                        <div class="o_setting_left_pane">
+                            <label for="api_key"/>
+                            <field name="api_key" password="True"/>
+                        </div>
+                        
+                        <div class="o_setting_left_pane">
+                            <label for="url"/>
+                            <field name="url"/>
+                        </div>
+                        
+                        <div class="o_setting_left_pane">
+                            <label for="sender"/>
+                            <field name="sender"/>
+                        </div>
+                        
+                        <div class="o_setting_left_pane">
+                            <label for="sales_head_contact"/>
+                            <field name="sales_head_contact"/>
+                        </div>
+                        
+                        <div class="o_setting_left_pane">
+                            <label for="accounts_head_contact"/>
+                            <field name="accounts_head_contact"/>
+                        </div>
+                        
+                        <div class="o_setting_left_pane">
+                            <label for="ops_head_contact"/>
+                            <field name="ops_head_contact"/>
+                        </div>
+
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+      <record model="ir.actions.act_window" id="action_sms_config_settings">
+          <field name="name">SMS</field>
+          <field name="type">ir.actions.act_window</field>
+          <field name="res_model">res.config.settings</field>
+          <field name="view_id" ref="res_config_settings_view_form_ym_sms"/>
+          <field name="view_mode">form</field>
+          <field name="target">inline</field>
+          <field name="context">{'module': 'ym_sms'}</field>
+      </record>
+
+
+      <menuitem name="SMS"
+                id="menu_sms_config"
+                parent="crm.crm_menu_config"
+                action="action_sms_config_settings"/>
+</odoo>
