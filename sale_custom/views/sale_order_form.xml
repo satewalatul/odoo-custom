@@ -15,12 +15,14 @@
                         <attribute name="options">{'no_create_edit': True, 'no_create': True, 'create_edit':False, 'create':False}</attribute>
                     </field>
                     <field name="godown"></field>
-                    <field name="billing_address"></field>
+                    <field name="billing_street"></field>
+                    <field name="billing_street2"></field>
                     <field name="billing_state_id"></field>
                     <field name="billing_country_id"></field>
                     <field name="billing_zip"></field>
 
-                    <field name="delivery_address"></field>
+                    <field name="delivery_street"></field>
+                    <field name="delivery_street2"></field>
                     <field name="delivery_state_id"></field>
                     <field name="delivery_country_id"></field>
                     <field name="delivery_zip"></field>
