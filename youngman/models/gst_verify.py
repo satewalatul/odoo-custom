@@ -84,33 +84,38 @@ class Partner(models.Model):
         response = requests.request("GET", url, headers=headers, data=payload)
         return response.json()
 
-    @api.onchange('vat')
+    @api.onchange('vat','gstn')
     def do_stuff(self):
         try:
-            if not ((self.vat)):
+            gst = self.vat or self.gstn
+            if not ((gst)):
                 return
 
-            if (len(self.vat) != 15):
+            if (len(gst) != 15):
                 return {
                     'warning': {'title': 'Warning',
                                 'message': 'Invalid GSTIN. GSTIN number must be 15 digits. Please check.', },
                 }
 
-            if not (re.match("\d{2}[A-Z]{5}\d{4}[A-Z]{1}\d[Z]{1}[A-Z\d]{1}", self.vat.upper())):
+            if not (re.match("\d{2}[A-Z]{5}\d{4}[A-Z]{1}\d[Z]{1}[A-Z\d]{1}", gst.upper())):
                 return {
                     'warning': {'title': 'Warning',
                                 'message': 'Invalid GSTIN format.\r\n.GSTIN must be in the format nnAAAAAnnnnA_Z_ where n=number, A=alphabet, _=either.', },
                 }
 
-            if not (Partner.check_gstin_chksum(self.vat)):
+            if not (Partner.check_gstin_chksum(gst)):
                 return {
                     'warning': {'title': 'Warning',
                                 'message': 'Invalid GSTIN. Checksum validation failed. It means one or more characters are probably wrong.', },
                 }
 
-            self.vat = self.vat.upper()
+            if self.vat:
+                self.vat = gst.upper()
 
-            gst_data = Partner.validate_gstn_from_master_india(self.vat)
+            if self.gstn:
+                self.gstn = gst.upper()
+
+            gst_data = Partner.validate_gstn_from_master_india(gst)
             if (gst_data['error']):
                 return {
                     'warning': {'title': 'Warning',
@@ -121,10 +126,8 @@ class Partner(models.Model):
 
             if self.is_company:
                 if self.vat[5] == 'C' or self.vat[5] == 'c':
-                    _logger.error("IF CONDITION: " + str(self.vat) + " " + str(gst_data["data"]["lgnm"]))
                     self.name = gst_data["data"]["lgnm"]
                 else:
-                    _logger.error("ELSE CONDITION: " + str(self.vat) + " " + str(gst_data["data"]["tradeNam"]))
                     if len(gst_data["data"]["tradeNam"]) == 0:
                         self.name = gst_data["data"]["lgnm"]
                     else:
