@@ -25,7 +25,25 @@ class PartnerInherit(models.Model):
     is_customer_branch = fields.Boolean(default=False, string="Is Branch")
 
     gstn = fields.Char(string="GSTN")
+    sap_ref = fields.Char()
 
+    credit_rating = fields.Selection([
+        ('0', 'A'),
+        ('1', 'B'),
+        ('2', 'C'),
+    ], string='Credit Rating', default='2')
+
+    cpl_status = fields.Selection([
+        ('0', 'Blocked'),
+        ('1', 'Unblocked'),
+    ], string='CPL Status')
+
+    bill_submission = fields.Many2one('res.partner.bill.sub', string='Bill Submission')
+    security_letter = fields.Boolean(default=False, string="Security Letter")
+    rental_advance = fields.Boolean(default=False, string="Rental Advance")
+    rental_order = fields.Boolean(default=False, string="Rental Order")
+    security_cheque = fields.Boolean(default=False, string="Security Cheque")
+    user_recievable_id = fields.Integer()
 
     # Mailing Address
     mailing_street = fields.Char(string="Mailing Address")
@@ -36,11 +54,12 @@ class PartnerInherit(models.Model):
     mailing_country_id = fields.Many2one('res.country', string='Mailing Country', ondelete='restrict')
     mailing_zip = fields.Char(string='Mailing Pincode', change_default=True)
 
-    child_ids = fields.One2many('res.partner', 'parent_id', string='Contact', domain=[('active', '=', True),('is_company', '=', False),('is_customer_branch', '=', False)])  # force "active_test" domain to bypass _search() override
+    child_ids = fields.One2many('res.partner', 'parent_id', string='Contact',
+                                domain=[('active', '=', True), ('is_company', '=', False), ('is_customer_branch', '=',
+                                                                                            False)])  # force "active_test" domain to bypass _search() override
     branch_ids = fields.One2many('res.partner', 'parent_id', string='Branches',
                                  domain=[('active', '=', True), ('is_company', '=', True),
                                          ('is_customer_branch', '=', True)])
-
 
     channel_tag_ids = fields.Many2many('res.partner.channel.tag', column1='partner_id',
                                        column2='channel_tag_id', string='Channel Tags', default=_default_channel_tag)
@@ -225,3 +244,9 @@ class PartnerBdTag(models.Model):
             name = name.split(' / ')[-1]
             args = [('name', operator, name)] + args
         return self._search(args, limit=limit, access_rights_uid=name_get_uid)
+
+class PartnerBillSubmission(models.Model):
+    _name = 'res.partner.bill.sub'
+    _description = 'Bill Submission'
+
+    name = fields.Char(string='Bill Submission', required=True)

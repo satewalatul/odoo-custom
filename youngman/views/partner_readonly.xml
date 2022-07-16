@@ -1,20 +1,30 @@
 <odoo>
     <data>
-
         <record id="view_partner_form_in_beta_inherit" model="ir.ui.view">
             <field name="name">res.partner.youngman.inherit</field>
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="base.view_partner_form"/>
             <field name="arch" type="xml">
                 <field name="vat" position="after">
-
                     <field name="in_beta" readonly="1"/>
+                    <field name="cpl_status" string="CPL Status"/>
+                    <field name="bill_submission" string="Bill Submission" attrs="{'no_create_edit': True, 'no_create': True, 'create_edit':False, 'create':False}"/>
+                    <field name="security_letter" string="Security Letter"/>
+                    <field name="rental_advance" string="Rental Advance"/>
+                    <field name="rental_order" string="Rental Order"/>
+                    <field name="security_cheque" string="Security Cheque"/>
+                    <field name="sap_ref" string="SAP Ref" invisible="1"/>
                     <field name="is_customer_branch" invisible="1"/>
                 </field>
                 <field name="category_id" position="after">
                     <field name="channel_tag_ids" widget="many2many_tags" placeholder="Channel Tags..." attrs="{'invisible': [('is_company','=', False)]}"/>
                     <field name="bd_tag_ids" widget="many2many_tags" placeholder="BD Tags..." attrs="{'invisible': [('is_company','=', False)]}"/>
                 </field>
+                <xpath expr="//group[@name='sale']">
+                    <field name="credit_limit" string="Credit Limit"/>
+                    <field name="credit_rating" string="Credit Rating"/>
+                    <field name="user_recievable_id" string="User Recievable"/>
+                </xpath>
             </field>
         </record>
 
@@ -24,7 +34,6 @@
             <field name="inherit_id" ref="base.view_partner_form"/>
             <field name="arch" type="xml">
             	<xpath expr="//notebook">
-
                     <page string="Branches" name="branches" autofocus="autofocus">
                             <field name="branch_ids" mode="kanban" context="{'default_parent_id': active_id, 'default_street': street, 'default_street2': street2, 'default_city': city, 'default_state_id': state_id, 'default_zip': zip, 'default_country_id': country_id, 'default_lang': lang, 'default_user_id': user_id, 'default_type': 'other'}">
                                 <kanban>
@@ -49,7 +58,17 @@
                                             <group>
                                                 <field name="name" string="Branch Name" attrs="{'required' : True}"/>
                                                 <field name="gstn" string="GSTN" attrs="{'required' : True}" />
+                                                <field name="cpl_status" string="CPL Status"/>
+                                                <field name="bill_submission" string="Bill Submission" attrs="{'no_create_edit': True, 'no_create': True, 'create_edit':False, 'create':False}"/>
+                                                <field name="security_letter" string="Security Letter"/>
+                                                <field name="rental_advance" string="Rental Advance"/>
+                                                <field name="rental_order" string="Rental Order"/>
+                                                <field name="security_cheque" string="Security Cheque"/>
+                                                <field name="sap_ref" string="SAP Ref" invisible="1"/>
                                                 <field name="user_id" domain="[('share', '=', False)]"/>
+                                                <field name="credit_limit" string="Credit Limit"/>
+                                                <field name="credit_rating" string="Credit Rating"/>
+                                                <field name="user_recievable_id" string="User Recievable"/>
                                                 <field name="is_company" context="{'default_is_company': True}" attrs="{'invisible' : True}"/>
                                                 <field name="is_customer_branch" context="{'default_is_customer_branch': True}" attrs="{'invisible' : True}"/>
                                                 <label for="street" string="Billing Address"/>
@@ -88,12 +107,9 @@
                                 </form>
                             </field>
                     </page>
-
             	</xpath>
             </field>
-          </record>
-
-
+        </record>
 
     </data>
 </odoo>
