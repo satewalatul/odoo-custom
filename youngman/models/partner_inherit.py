@@ -34,8 +34,9 @@ class PartnerInherit(models.Model):
     ], string='Credit Rating', default='2')
 
     cpl_status = fields.Selection([
-        ('0', 'Blocked'),
-        ('1', 'Unblocked'),
+        ('0', 'LEGAL'),
+        ('1', 'BLOCKED'),
+        ('2', 'UNBLOCKED'),
     ], string='CPL Status')
 
     bill_submission = fields.Many2one('res.partner.bill.sub', string='Bill Submission')
@@ -130,6 +131,27 @@ class PartnerInherit(models.Model):
             )
         return super().view_header_get(view_id, view_type)
 
+    def check_vat(self, cr, uid, ids, context=None):
+        user_company = self.pool.get('res.users').browse(cr, uid, uid).company_id
+        if user_company.vat_check_vies:
+            check_func = self.vies_vat_check
+        else:
+            check_func = self.simple_vat_check
+        for partner in self.browse(cr, uid, ids, context=context):
+            if not partner.vat:
+                continue
+            if partner.country_id.code and partner.vat.startswith(partner.country_id.code):
+
+                vat_country, vat_number = self._split_vat(partner.vat)
+            elif partner.country_id.code:
+                vat_number = partner.vat
+                vat_country = partner.country_id.code
+            else:  # if no country code ->
+                # just raise error that country is required?
+                pass
+            if not check_func(cr, uid, vat_country, vat_number, context=context):
+                return False
+            return True
 
 class ContactTeamUsers(models.Model):
     _description = 'Contact Team Users'
