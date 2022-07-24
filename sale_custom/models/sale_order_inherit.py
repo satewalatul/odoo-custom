@@ -58,7 +58,7 @@ class SaleOrderInherit(models.Model):
         ('monthly', 'Monthly')],
         string="Price Type",
         required=True, default='monthly')
-    purchaser_phone = fields.Integer(string='Purchaser Contact Phone', required=True)
+    purchaser_phone = fields.Char(string='Purchaser Contact Phone', required=True)
     purchaser_name = fields.Many2one("res.partner", string='Purchaser Name',
                                      domain="[('parent_id', '=', partner_id),('category_id','ilike','purchaser'),('phone','ilike',purchaser_phone)]")
     purchaser_email = fields.Many2one("res.partner", string='Purchaser Email',
@@ -136,14 +136,40 @@ class SaleOrderInherit(models.Model):
         return code[:6]
 
 
+class ItemsCategory(models.Model):
+    _name = 'items.category'
+    _description = "Items Category"
+    name = fields.Char(string='Category')
+
 class ProductTemplateInherit(models.Model):
     _name = 'product.template'
     _inherit = 'product.template'
 
-    list_price = fields.Float('Rental Price', digits='Product Price', required=True, default=0.0)
+    status = fields.Selection([
+        ('0', 'ACTIVE'),
+        ('1', 'DEACTIVE'),
+        ('2', 'DISABLE'),
+    ], string='Status')
+
+    bundle = fields.Boolean(default=False, string="Bundle")
+    consumable = fields.Boolean(default=False, string="Consumable")
+    serialized = fields.Boolean(default=False, string="Serialized")
+    list_price = fields.Float('Rental Price', digits=(12, 2), required=True, default=0.0)
+    meters = fields.Float('Meters', default=0.0)
+    length = fields.Float('Length (inch)', default=0.0)
+    breadth = fields.Float('Breadth (inch)', default=0.0)
+    height = fields.Float('Height (inch)', default=0.0)
+    actual_weight = fields.Float('Actual Weight (kg)', default=0.0)
+    vol_weight = fields.Float('Volume Weight', default=0.0)
+    cft = fields.Float('CFT (cu ft)', default=0.0)
+    missing_estimate_value = fields.Float('Missing Estimate Value', digits=(12, 2), default=0.0)
+    material = fields.Text(string="Material")
+    item_type = fields.Char(string="Item Type")
+    purchase_code = fields.Char(string="Purchase Code")
+    supplier = fields.Char(string="Supplier")
+    category = fields.Many2one(comodel_name='items.category', string='Category')
     standard_price = fields.Float(
-        'Estimate Value', company_dependent=True,
-        digits='Product Price',
+        'Estimate Value', company_dependent=True, digits=(12, 2),
         groups="base.group_user",
     )
 
@@ -151,6 +177,8 @@ class ProductTemplateInherit(models.Model):
 class SaleOrderLineInherit(models.Model):
     _inherit = 'sale.order.line'
     _description = 'sale.order.line'
+
+    item_code = fields.Char(string="Item Code")
 
     @api.onchange('price_unit')
     def min_price(self):

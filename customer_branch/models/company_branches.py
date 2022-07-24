@@ -25,3 +25,4 @@ class CompanyBranches(models.Model):
     delivery_zip = fields.Char(string='Delivery Pincode', change_default=True)
 
     partner_id = fields.Many2one("res.partner", "Company")
+

@@ -9,6 +9,7 @@ from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
+
 class PartnerInherit(models.Model):
     _name = 'res.partner'
     _inherit = 'res.partner'
@@ -21,26 +22,71 @@ class PartnerInherit(models.Model):
 
     in_beta = fields.Boolean(default=False, string="In Beta")
 
-    channel_tag_ids = fields.Many2many('res.partner.channel.tag', column1='partner_id',
-                                   column2='channel_tag_id', string='Channel Tags', default=_default_channel_tag)
-    bd_tag_ids = fields.Many2many('res.partner.bd.tag', column1='partner_id',
-                                       column2='bd_tag_id', string='BD Tags', default=_default_channel_tag)
+    is_customer_branch = fields.Boolean(default=False, string="Is Branch")
 
-    bd_tag_user_ids = fields.One2many('contact.team.users', 'contact_id', string='Contact Team Users', help="Users having this BD Tag as team name")
+    gstn = fields.Char(string="GSTN")
+    sap_ref = fields.Char()
+
+    credit_rating = fields.Selection([
+        ('0', 'A'),
+        ('1', 'B'),
+        ('2', 'C'),
+    ], string='Credit Rating', default='2')
+
+    cpl_status = fields.Selection([
+        ('0', 'LEGAL'),
+        ('1', 'BLOCKED'),
+        ('2', 'UNBLOCKED'),
+    ], string='CPL Status')
+
+    bill_submission = fields.Many2one('res.partner.bill.sub', string='Bill Submission')
+    security_letter = fields.Boolean(default=False, string="Security Letter")
+    rental_advance = fields.Boolean(default=False, string="Rental Advance")
+    rental_order = fields.Boolean(default=False, string="Rental Order")
+    security_cheque = fields.Boolean(default=False, string="Security Cheque")
+    user_recievable_id = fields.Integer()
+
+    # Mailing Address
+    mailing_street = fields.Char(string="Mailing Address")
+    mailing_street2 = fields.Char()
+    mailing_city = fields.Char()
+    mailing_state_id = fields.Many2one("res.country.state", string='Mailing State', ondelete='restrict',
+                                       domain="[('country_id', '=', mailing_country_id)]")
+    mailing_country_id = fields.Many2one('res.country', string='Mailing Country', ondelete='restrict')
+    mailing_zip = fields.Char(string='Mailing Pincode', change_default=True)
+
+    child_ids = fields.One2many('res.partner', 'parent_id', string='Contact',
+                                domain=[('active', '=', True), ('is_company', '=', False), ('is_customer_branch', '=',
+                                                                                            False)])  # force "active_test" domain to bypass _search() override
+    branch_ids = fields.One2many('res.partner', 'parent_id', string='Branches',
+                                 domain=[('active', '=', True), ('is_company', '=', True),
+                                         ('is_customer_branch', '=', True)])
+
+    channel_tag_ids = fields.Many2many('res.partner.channel.tag', column1='partner_id',
+                                       column2='channel_tag_id', string='Channel Tags', default=_default_channel_tag)
+    bd_tag_ids = fields.Many2many('res.partner.bd.tag', column1='partner_id',
+                                  column2='bd_tag_id', string='BD Tags', default=_default_channel_tag)
+
+    bd_tag_user_ids = fields.One2many('contact.team.users', 'contact_id', string='Contact Team Users',
+                                      help="Users having this BD Tag as team name")
 
     @api.onchange('bd_tag_ids')
     def _onchange_bd_tag_ids(self):
         _logger.error("called _onchange_bd_tag_ids")
         _logger.error(str(self.id) + " has " + str(len(self.bd_tag_user_ids)))
-        if(self._origin.id):
+        if (self._origin.id):
             self._cr.execute('delete from contact_team_users where contact_id = %s', [self._origin.id])
             _logger.error(str(self.id) + " has " + str(len(self.bd_tag_user_ids)))
 
             for bd_tag in self.bd_tag_ids:
-                users = self.env['res.users'].sudo().search(['|', ('sale_team_id.name', 'ilike', bd_tag.name), ('groups_id.name','=','User: All Documents')])
-                _logger.error("For tag name " + str(bd_tag.name) + " " + str(len(users)) + " type " + str(type(self.bd_tag_user_ids)))
+                users = self.env['res.users'].sudo().search(
+                    ['|', ('sale_team_id.name', 'ilike', bd_tag.name), ('groups_id.name', '=', 'User: All Documents')])
+                _logger.error("For tag name " + str(bd_tag.name) + " " + str(len(users)) + " type " + str(
+                    type(self.bd_tag_user_ids)))
                 for user in users:
-                    self._cr.execute('insert into contact_team_users (user_name, user_id, contact_id) values(%s, %s, %s)', ( user.name, user.id ,self._origin.id))
+                    self._cr.execute(
+                        'insert into contact_team_users (user_name, user_id, contact_id) values(%s, %s, %s)',
+                        (user.name, user.id, self._origin.id))
 
     @api.onchange('user_id')
     def _onchange_salesperson(self):
@@ -48,7 +94,8 @@ class PartnerInherit(models.Model):
         linked_contacts = self.child_ids
         _logger.error("called _onchange_user_id")
         for contact in linked_contacts:
-            _logger.error("updating res_partner user id = " + str(new_user_id.id) + " for user " + str(contact._origin.id))
+            _logger.error(
+                "updating res_partner user id = " + str(new_user_id.id) + " for user " + str(contact._origin.id))
             self._cr.execute('update res_partner set user_id = %s where id = %s', (new_user_id.id, contact._origin.id))
 
     @api.onchange('team_id')
@@ -57,7 +104,8 @@ class PartnerInherit(models.Model):
         linked_contacts = self.child_ids
         _logger.error("called _onchange_team_id")
         for contact in linked_contacts:
-            _logger.error("updating res_partner team id = " + str(new_team_id.id) + " for user " + str(contact._origin.id))
+            _logger.error(
+                "updating res_partner team id = " + str(new_team_id.id) + " for user " + str(contact._origin.id))
             self._cr.execute('update res_partner set team_id = %s where id = %s', (new_team_id.id, contact._origin.id))
 
     @api.onchange('property_payment_term_id')
@@ -68,7 +116,6 @@ class PartnerInherit(models.Model):
         for contact in linked_contacts:
             _logger.error("updating " + contact.name)
             contact.property_payment_term_id = new_payment_term
-
 
     @api.model
     def view_header_get(self, view_id, view_type):
@@ -84,14 +131,36 @@ class PartnerInherit(models.Model):
             )
         return super().view_header_get(view_id, view_type)
 
+    def check_vat(self, cr, uid, ids, context=None):
+        user_company = self.pool.get('res.users').browse(cr, uid, uid).company_id
+        if user_company.vat_check_vies:
+            check_func = self.vies_vat_check
+        else:
+            check_func = self.simple_vat_check
+        for partner in self.browse(cr, uid, ids, context=context):
+            if not partner.vat:
+                continue
+            if partner.country_id.code and partner.vat.startswith(partner.country_id.code):
+
+                vat_country, vat_number = self._split_vat(partner.vat)
+            elif partner.country_id.code:
+                vat_number = partner.vat
+                vat_country = partner.country_id.code
+            else:  # if no country code ->
+                # just raise error that country is required?
+                pass
+            if not check_func(cr, uid, vat_country, vat_number, context=context):
+                return False
+            return True
 
 class ContactTeamUsers(models.Model):
     _description = 'Contact Team Users'
     _name = 'contact.team.users'
 
-    user_name = fields.Char(string = "User Name")
-    user_id = fields.Integer(string = "User Id")
+    user_name = fields.Char(string="User Name")
+    user_id = fields.Integer(string="User Id")
     contact_id = fields.Many2one('res.partner', string="Contact")
+
 
 class PartnerChannelTag(models.Model):
     _description = 'Partner Channel'
@@ -197,3 +266,9 @@ class PartnerBdTag(models.Model):
             name = name.split(' / ')[-1]
             args = [('name', operator, name)] + args
         return self._search(args, limit=limit, access_rights_uid=name_get_uid)
+
+class PartnerBillSubmission(models.Model):
+    _name = 'res.partner.bill.sub'
+    _description = 'Bill Submission'
+
+    name = fields.Char(string='Bill Submission', required=True)

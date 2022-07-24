@@ -8,7 +8,6 @@ _logger = logging.getLogger(__name__)
 
 class JobsiteStage(models.Model):
     _name = 'jobsite_stage'
-    stage_id = fields.Many2one(string='Stage')
     name = fields.Char(string="Name")
 
 
@@ -35,6 +34,13 @@ class Jobsite(models.Model):
         required=True, default='Virgin', help="", tracking=True)
     note = fields.Text(string='Description')
     active = fields.Boolean(string='isActive', default=True, tracking=True)
+
+    status = fields.Selection([
+        ('0', 'ACTIVE'),
+        ('1', 'CLOSED'),
+        ('2', 'VIRGIN'),
+    ], string='Status')
+
     street = fields.Char()
     street2 = fields.Char()
     zip = fields.Char(change_default=True)
@@ -44,8 +50,8 @@ class Jobsite(models.Model):
     country_id = fields.Many2one('res.country', string='Country', ondelete='restrict')
     country_code = fields.Char(related='country_id.code', string="Country Code")
     stage_id = fields.Many2one("jobsite_stage", string="Stage")
-    latitude = fields.Float(string='Geo Latitude', digits=(10, 7))
-    longitude = fields.Float(string='Geo Longitude', digits=(10, 7))
+    latitude = fields.Float(string='Geo Latitude', digits=(20, 14))
+    longitude = fields.Float(string='Geo Longitude', digits=(20, 14))
     marker_color = fields.Char(string='Marker Color', default='red', required=True)
     user_id = fields.Many2one(
         'res.users', string='Salesperson', default=lambda self: self.env.user, index=True, tracking=True)

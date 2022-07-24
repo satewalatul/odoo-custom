@@ -35,5 +35,5 @@ website_custom/
 youngman/__pycache__/
 account_invoice_start_end_dates/models/__pycache__/
 jobsites/models/__pycache__/
-
+youngman/models/__pycache__/
 
