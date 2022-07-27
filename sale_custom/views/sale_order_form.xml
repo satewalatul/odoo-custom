@@ -6,54 +6,82 @@
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
-                <field name="payment_term_id" attrs="{'invisible': True}"/>
-                <field name="pricelist_id" attrs="{'readonly': True}"/>
 
-                <field name="partner_id" position="after">
-                    <field name="jobsite_id" position="attributes">
-                        <attribute name="options">{'no_create_edit': True, 'no_create': True, 'create_edit':False, 'create':False}</attribute>
-                    </field>
-                    <field name="godown"></field>
-                    <field name="billing_street"></field>
-                    <field name="billing_street2"></field>
-                    <field name="billing_state_id"></field>
-                    <field name="billing_country_id"></field>
-                    <field name="billing_zip"></field>
+                   <field name="partner_id" position="replace" >
 
-                    <field name="delivery_street"></field>
-                    <field name="delivery_street2"></field>
-                    <field name="delivery_state_id"></field>
-                    <field name="delivery_country_id"></field>
-                    <field name="delivery_zip"></field>
+                            <field name="partner_id" />
+                            <field name="customer_branch" attrs="{'invisible': [('tentative_quo', '=', True)]}" position="attributes">
+                                <attribute name="options">{'no_create_edit': True, 'no_create': True, 'create_edit':False, 'create':False, 'is_company': True, 'is_customer_branch': True}</attribute>
+                            </field>
+                            <field name="payment_term_id" attrs="{'invisible': True}"/>
+                            <field name="pricelist_id" attrs="{'invisible': True}"/>
+                            <field name="jobsite_id" position="attributes">
+                            <attribute name="options">{'no_create_edit': True, 'no_create': True, 'create_edit':False, 'create':False}</attribute>
+                        </field>
+                            <field name="godown"/>
 
-                    <field name="freight_amount"></field>
-                    <field name="delivery_date"/>
-                    <field name="pickup_date"/>
-                    <field name="security_amount"/>
-                    <field name="freight_paid_by"/>
-                    <field name="price_type"/>
-                    <field name="below_min_price"/>
-                    <field name="purchaser_phone"/>
-                    <field name="purchaser_name"/>
-                    <field name="purchaser_email"/>
+                            <field name="price_type" attrs="{'required': [('tentative_quo', '=', False)]}"/>
+                            <field name="po_number"/>
 
+                            <label for="delivery_street" string="Delivery Address"/>
+                            <div class="o_address_format">
+                            <field name="delivery_street" attrs="{'required': [('tentative_quo', '=', False)]}"/>
+                            <field name="delivery_street2"/>
+                            <field name="delivery_state_id"/>
+                            <field name="delivery_country_id"/>
+                            <field name="delivery_zip"/>
+                            </div>
 
-                    <div>
-                        <field name="otp" attrs="{'invisible': [('below_min_price', '=', False)]}"/>
-                        <button name="request_otp" type="object" string="Request OTP" attrs="{'invisible': [('below_min_price', '=', False)]}"/>
-                        <button name="verify_otp" type="object" string="Verify OTP" attrs="{'invisible': [('below_min_price', '=', False)]}"/>
-                    </div>
-                </field>
+                            <field name="delivery_date" attrs="{'required': [('tentative_quo', '=', False)]}"/>
+                            <field name="freight_amount" attrs="{'required': [('tentative_quo', '=', False)]}"/>
+                            <field name="security_amount" attrs="{'required': [('tentative_quo', '=', False)]}"/>
+                            <field name="freight_paid_by" attrs="{'required': [('tentative_quo', '=', False)]}"/>
 
-                <xpath expr="//group[@name='order_details']" position="replace">
-                    <field name="pricelist_id" invisible="1"/>
-                    <field name="validity_date" invisible="1"/>
-                    <field name="date_order" invisible="1"/>
-                    <field name="show_update_pricelist" invisible="1"/>
-                    <field name="currency_id" invisible="1"/>
-                    <field name="tax_country_id" invisible="1"/>
-                    <field name="payment_term_id" invisible="1"/>
+                            <field name="tentative_quo"/>
+                            <field name="below_min_price"/>
 
+                        <div>
+                            <field name="otp" attrs="{'invisible': [('below_min_price', '=', False)]}"/>
+                            <button name="request_otp" type="object" string="Request OTP" attrs="{'invisible': [('below_min_price', '=', False)]}"/>
+                            <button name="verify_otp" type="object" string="Verify OTP" attrs="{'invisible': [('below_min_price', '=', False)]}"/>
+                        </div>
+
+                     </field>
+
+               <xpath expr="//group[@name='order_details']" position="inside">
+                   <field name="purchaser_name"/>
+                   <field name="purchaser_phone"/>
+                   <field name="purchaser_email"/>
+
+                   <label for="billing_street" string="Billing Address"/>
+                   <div class="o_address_format">
+                   <field name="billing_street" attrs="{'required': [('tentative_quo', '=', False)]}"/>
+                   <field name="billing_street2"/>
+                   <field name="billing_state_id"/>
+                   <field name="billing_country_id"/>
+                   <field name="billing_zip"/>
+                   </div>
+
+                   <field name="pickup_date" attrs="{'required': [('tentative_quo', '=', False)]}"/>
+
+                   <div>
+                        <field name="is_security_letter"  attrs="{'invisible': True}"/>
+                        <field name="is_rental_advance"  attrs="{'invisible': True}"/>
+                        <field name="is_rental_order"  attrs="{'invisible': True}"/>
+                        <field name="is_security_cheque"  attrs="{'invisible': True}"/>
+                        <field name="security_letter"  attrs="{'invisible': [('is_security_letter', '=', False)]}"/>
+                        <field name="rental_advance"  attrs="{'invisible': [('is_rental_advance', '=', False)]}"/>
+                        <field name="rental_order"  attrs="{'invisible': [('is_rental_order', '=', False)]}"/>
+                        <field name="security_cheque"  attrs="{'invisible': [('is_security_cheque', '=', False)]}"/>
+                   </div>
+
+                   <field name="pricelist_id" invisible="1"/>
+                   <field name="validity_date" invisible="1"/>
+                   <field name="date_order" invisible="1"/>
+                   <field name="show_update_pricelist" invisible="1"/>
+                   <field name="currency_id" invisible="1"/>
+                   <field name="tax_country_id" invisible="1"/>
+                   <field name="payment_term_id" invisible="1"/>
                 </xpath>
 
             </field>
@@ -64,12 +92,30 @@
             <field name="model">product.template</field>
             <field name="inherit_id" ref="product.product_template_only_form_view"/>
             <field name="arch" type="xml">
-                <field name="categ_id" position="after">
-                    <field name="category" position="attributes">
-                        <attribute name="options">{'no_create_edit': True, 'no_create': True, 'create_edit':False, 'create':False}</attribute>
-                    </field>
-                    <field name="status"></field>
-                </field>
+                <group>
+                    <group>
+                        <field name="category"></field>
+                        <field name="status"></field>
+                        <field name="meters"></field>
+                        <field name="length"></field>
+                        <field name="breadth"></field>
+                        <field name="height"></field>
+                        <field name="actual_weight"></field>
+                        <field name="vol_weight"></field>
+                        <field name="cft"></field>
+                    </group>
+                    <group>
+                        <field name="missing_estimate_value"></field>
+                        <field name="material"></field>
+                        <field name="item_type"></field>
+                        <field name="purchase_code"></field>
+                        <field name="supplier"></field>
+                        <field name="standard_price"></field>
+                        <field name="bundle"></field>
+                        <field name="consumable"></field>
+                        <field name="serialized"></field>
+                     </group>
+                </group>
             </field>
         </record>
 

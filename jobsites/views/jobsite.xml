@@ -47,8 +47,7 @@
 								<field name="stage_id"/>
 								<field name="status"/>
 								<field name="vl_date"/>
-								<field name="godown_name" />
-								<field name="beta_godown_id" invisible="1"/>
+								<field name="godown_ids" />
 								<field name="user_id" position="attributes">
 									<attribute name="options">{'no_create_edit': True, 'no_create': True}</attribute>
 								</field>

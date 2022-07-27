@@ -1,2 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-customer_branch.access_company_branches,access_company_branches,customer_branch.model_customer_branches,base.group_user,1,1,1,1
