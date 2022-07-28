@@ -22,25 +22,42 @@ class SaleOrderInherit(models.Model):
         'jobsite', string='Site Name', index=True, tracking=10,
         help="Linked site (optional). You can find a site by its Name.")
 
-    #
-    # @api.depends('tentative_quo')
-    # def _compute_partner_id_domain_tentative(self):
-    #     for rec in self:
-    #         if rec.tentative_quo:
-    #             new_domain = json.dumps(['|', '&', ('is_company', '=', True), '&', ('is_customer_branch', '=', False), (rec.tentative_quo, '=', False), '&', ('is_customer_branch', '=', False),  (rec.tentative_quo, '=', True)])
-    #             rec.partner_id_domain_tentative = new_domain
-    #         else:
-    #             new_domain = json.dumps([('is_company', '=', True), ('is_customer_branch', '=', False)])
-    #             rec.partner_id_domain_tentative = new_domain
-    #
-    #
-    # partner_id_domain_tentative = fields.Char(compute="_compute_partner_id_domain_tentative", readonly=True, store=False)
     tentative_quo = fields.Boolean('Tentative Quotation', default=False)
-    partner_id = fields.Many2one(comodel_name='res.partner', domain="['|', '&', ('is_company', '=', True), '&', ('is_customer_branch', '=', False), ('rec.tentative_quo', '=', False), '&', ('is_customer_branch', '=', False),  ('rec.tentative_quo', '=', True)]")
+    partner_id = fields.Many2one(comodel_name='res.partner', domain="[('is_customer_branch', '=', False)]")
 
     customer_branch = fields.Many2one(comodel_name='res.partner', string='Customer Branch', domain="[('is_company', "
                                                                                                    "'=', True), "
                                                                                                    "('is_customer_branch', '=', True), ('parent_id', '=', partner_id)]")
+    # @api.model
+    # def _amount_all(self):
+    #     super(SaleOrderInherit, self)._amount_all()
+    #     for order in self:
+    #         account_move = self.env['account.move']
+    #
+    #         tax_lines_data = [{
+    #             'line_key': 'base_line_0',
+    #             'base_amount': tax_results['total_excluded'],
+    #             'tax': current_tax,
+    #         }]
+    #
+    #         amount_untaxed = order.amount_untaxed + order.freight_amount
+    #         amount_tax = order.amount_tax + 5
+    #
+    #         order.update({
+    #             'amount_untaxed': amount_untaxed,
+    #             'amount_tax': amount_tax,
+    #             'amount_total': amount_untaxed + amount_tax,
+    #         })
+
+    # @api.model
+    # def _compute_tax_totals_json(self):
+
+    #     account_move = self.env['account.move']
+    #     for order in self:
+    #         order.amount_untaxed = order.freight_amount
+    #         tax_lines_data = account_move._prepare_tax_lines_data_for_totals_from_object(order.order_line, compute_taxes)
+    #         tax_totals = account_move._get_tax_totals(order.partner_id, tax_lines_data, order.amount_total, order.amount_untaxed, order.currency_id)
+    #         order.tax_totals_json = json.dumps(tax_totals)
 
 
     @api.model
@@ -70,12 +87,12 @@ class SaleOrderInherit(models.Model):
 
     pickup_date = fields.Date('Pickup Date')
 
-    #jobsite_godowns = fields.Boolean(related='jobsite_id.godown_ids', store=False)
+    # jobsite_godowns = fields.Boolean(related='jobsite_id.godown_ids', store=False)
     godown = fields.Many2one("jobsite.godown", string='Godown', ondelete='restrict')
 
     delivery_date = fields.Date('Delivery Date')
-    security_amount = fields.Float(string="Security Amount")
-    freight_amount = fields.Float(string="Freight Amount", default=0.0)
+    security_amount = fields.Monetary(string="Security Amount", currency_field='currency_id')
+    freight_amount = fields.Monetary(string="Freight Amount", currency_field='currency_id')
     freight_paid_by = fields.Selection([
         ('freight_type1', 'It has been agreed 1st Dispatch and final Pickup will be done by Youngman'),
         ('freight_type2',
@@ -105,26 +122,83 @@ class SaleOrderInherit(models.Model):
     otp = fields.Integer(string='OTP', store=False)
     otp_verified = fields.Boolean(string='OTP', store=False, default=False)  # TODO compute field should be equal to
 
-
-
     is_security_letter = fields.Boolean(related='customer_branch.security_letter', store=False)
     is_rental_advance = fields.Boolean(related='customer_branch.rental_advance', store=False)
     is_rental_order = fields.Boolean(related='customer_branch.rental_order', store=False)
     is_security_cheque = fields.Boolean(related='customer_branch.security_cheque', store=False)
-
 
     security_letter = fields.Binary('Security Letter')
     rental_advance = fields.Binary('Rental Advance')
     rental_order = fields.Binary('Rental Order')
     security_cheque = fields.Binary('Security Cheque')
 
+    def check_customer_validation(self, vals):
+        if not vals['tentative_quo']:
+            if (self.partner_id.is_company == False) or (self.partner_id.is_customer_branch == True):
+                raise ValidationError(_("Please select a Company"))
+
+    @api.model
+    def _amount_all(self):
+        super(SaleOrderInherit, self)._amount_all()
+        for order in self:
+            #TODO: get tax rate from config
+            tax_rate = 0.28
+
+            amount_untaxed = order.amount_untaxed + order.freight_amount
+            amount_tax = order.amount_tax + (order.freight_amount * tax_rate)
+
+            order.update({
+                'amount_untaxed': amount_untaxed,
+                'amount_tax': amount_tax,
+                'amount_total': amount_untaxed + amount_tax,
+            })
+
+    @api.depends('order_line.tax_id', 'order_line.price_unit', 'amount_total', 'amount_untaxed', 'freight_amount')
+    def _compute_tax_totals_json(self):
+        def compute_taxes(order_line):
+            price = order_line.price_unit * (1 - (order_line.discount or 0.0) / 100.0)
+            order = order_line.order_id
+            return order_line.tax_id._origin.compute_all(price, order.currency_id, order_line.product_uom_qty,
+                                                         product=order_line.product_id,
+                                                         partner=order.partner_shipping_id)
+
+        account_move = self.env['account.move']
+        for order in self:
+            tax_lines_data = account_move._prepare_tax_lines_data_for_totals_from_object(order.order_line, compute_taxes)
+
+            tax_lines_data.append({'line_key': "tax_line_NewId_'virtual_0'_24", "tax_amount": order.freight_amount * 0.28, "tax": self.env['account.tax'].sudo().search([('id', '=', '24')])})
+            tax_lines_data.append({'line_key': "base_line_NewId_'virtual_0'", "base_amount": order.freight_amount, "tax": self.env['account.tax'].sudo().search([('id', '=', '24')])})
+
+            tax_totals = account_move._get_tax_totals(order.partner_id, tax_lines_data, order.amount_total,
+                                                      order.amount_untaxed, order.currency_id)
+            order.tax_totals_json = json.dumps(tax_totals)
+
+
+    @api.model
+    def create(self, vals):
+        self.check_customer_validation(vals)
+        return super(SaleOrderInherit, self).create(vals)
+
+    @api.model
+    def write(self, vals):
+        self.check_customer_validation(vals)
+        return super(SaleOrderInherit, self).write(vals)
 
     def action_confirm(self):
-        if self.po_number is None or (self.security_letter is None and self.customer_branch.security_letter is True):
-            raise ValidationError(_('Testing'))
+        if self.tentative_quo:
+            raise ValidationError(_("Confirmation of tentative quotation is not allowed"))
+        if not self.po_number:
+            raise ValidationError(_('PO Number is mandatory for confirming a quotation'))
+        if self.security_letter is None and self.customer_branch.security_letter is True:
+            raise ValidationError(_('Security Letter is mandatory for this customer'))
+        if self.rental_order is None and self.customer_branch.rental_order is True:
+            raise ValidationError(_('Rental Order is mandatory for this customer'))
+        if self.rental_advance is None and self.customer_branch.rental_advance is True:
+            raise ValidationError(_('Rental Advance is mandatory for this customer'))
+        if self.security_cheque is None and self.customer_branch.security_cheque is True:
+            raise ValidationError(_('Security Cheque is mandatory for this customer'))
 
         res = super(SaleOrderInherit, self).action_confirm()
-
 
     @api.onchange('purchaser_name')
     def get_purchaser_phone(self):
@@ -183,7 +257,7 @@ class SaleOrderInherit(models.Model):
         otp = self._generate_otp()
 
         url = "%s?apikey=%s&text=OTP:- %s Youngman India Pvt. Ltd.&mobileno=%s&sender=%s" % (
-        endpoint, api_key, str(otp), number, sender)
+            endpoint, api_key, str(otp), number, sender)
 
         try:
             response = requests.request("POST", url, headers={}, data={})
@@ -214,6 +288,7 @@ class ItemsCategory(models.Model):
     _name = 'items.category'
     _description = "Items Category"
     name = fields.Char(string='Category')
+
 
 class ProductTemplateInherit(models.Model):
     _name = 'product.template'
