@@ -37,36 +37,33 @@ class ReadXls(models.TransientModel):
         # my_credentials = service_account.Credentials.from_service_account_info(service_account_info, scopes=SCOPES)
         # client = pygsheets.authorize(custom_credentials=my_credentials)
 
-        client = pygsheets.authorize(service_account_file='custom/xls_leads/models/keys.json')
+        client = pygsheets.authorize(service_account_file='')
         sheet1 = client.open_by_url('')
         worksheet = sheet1.sheet1
         cells = worksheet.get_all_values(include_tailing_empty_rows=False, include_tailing_empty=False,
                                          returnas='matrix')
         end_row = len(cells)
         indices = {
-            'TIMESTAMP': 0,
             'NAME': 1,
             'COMPANY': 2,
             'REQUIREMENT': 3,
-            'DESIGNATION': 4,
-            'BRANCH': 5,
-            'NAME_NUMBER': 6,
-            'NUMBER': 7,
-            'STATUS': 8,
-            'ID': 9
+            'CUSTOMER_NUMBER': 4 ,
+            'NAME': 5,
+            'NUMBER':6
+
+
 
         }
         leads = [{
-            'create_date': new_lst[indices['TIMESTAMP']],
+
             'contact_name': new_lst[indices['NAME']],
             'partner_name': new_lst[indices['COMPANY']],
             'name': new_lst[indices['REQUIREMENT']],
-            #'designation': new_lst[indices['DESIGNATION']],
-            'branch': new_lst[indices['BRANCH']], #to do
-            'lead_qual': new_lst[indices['NAME_NUMBER']], #to do
-            'number': new_lst[indices['NUMBER']],
-            'status': new_lst[indices['STATUS']], #to do
-            #'id': new_lst[indices['ID']]
+            'phone': new_lst[indices['CUSTOMER_NUMBER']],
+            'lead_qual': new_lst[indices['NAME']],
+            'lead_qual_num': new_lst[indices['NUMBER']],
+
+
 
         } for new_lst in cells[2:]]
         print(leads)
