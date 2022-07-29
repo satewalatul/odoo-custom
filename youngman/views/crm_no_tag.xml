@@ -21,6 +21,12 @@
               <field name="tag_ids" position="after">
                     <field name="job_order" attrs="{'invisible': [('type','=', 'lead')]}"/>
               </field>
+              <field name="user_id" position="before">
+                    <field name="lead_qual" attrs="{'invisible': [('type','=', 'opportunity')]}"/>
+              </field>
+              <field name="partner_name" position="after">
+                    <field name="branch" attrs="{'invisible': [('type','=', 'opportunity')]}"/>
+              </field>
           </field>
       </record>
 
