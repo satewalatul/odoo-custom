@@ -1,0 +1,70 @@
+<odoo>
+
+    <record id="res_config_settings_view_form_xls_leads" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.crm.xls_leads</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="10"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('settings')]" position="inside">
+                <div class="app_settings_block" data-string="opsleads" string="opsleads" data-key="xls_leads">
+                    <h2>Ops Leads Management</h2>
+                    <div class="row mt16 o_settings_container">
+                        <div class="o_setting_left_pane">
+                            <label for="type"/>
+                            <field name="type" />
+                        </div>
+                        <div class="o_setting_left_pane">
+                            <label for="project_id"/>
+                            <field name="project_id"/>
+                        </div>
+                        <div class="o_setting_left_pane">
+                            <label for="private_key_id"/>
+                            <field name="private_key_id"/>
+                        </div>
+                        <div class="o_setting_left_pane">
+                            <label for="client_email"/>
+                            <field name="client_email"/>
+                        </div>
+                        <div class="o_setting_left_pane">
+                            <label for="client_id"/>
+                            <field name="client_id"/>
+                        </div>
+                        <div class="o_setting_left_pane">
+                            <label for="auth_uri"/>
+                            <field name="auth_uri"/>
+                        </div>
+                        <div class="o_setting_left_pane">
+                            <label for="token_uri"/>
+                            <field name="token_uri"/>
+                        </div>
+                        <div class="o_setting_left_pane">
+                            <label for="auth_provider_x509_cert_url"/>
+                            <field name="auth_provider_x509_cert_url" />
+                        </div>
+                        <div class="o_setting_left_pane">
+                            <label for="client_x509_cert_url"/>
+                            <field name="client_x509_cert_url" />
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+      <record model="ir.actions.act_window" id="action_opsleads_config_settings">
+          <field name="name">opsleads</field>
+          <field name="type">ir.actions.act_window</field>
+          <field name="res_model">res.config.settings</field>
+          <field name="view_id" ref="res_config_settings_view_form_xls_leads"/>
+          <field name="view_mode">form</field>
+          <field name="target">inline</field>
+          <field name="context">{'module': 'xls_leads'}</field>
+      </record>
+
+
+      <menuitem name="Ops Leads"
+                id="menu_opsleads_config"
+                parent="crm.crm_menu_config"
+                action="action_opsleads_config_settings"/>
+</odoo>
