@@ -70,6 +70,7 @@ class SaleOrderInherit(models.Model):
     # Billing Address
     billing_street = fields.Char(string="Billing Address")
     billing_street2 = fields.Char()
+    billing_city = fields.Char()
     billing_state_id = fields.Many2one("res.country.state", string='Billing State', ondelete='restrict',
                                        domain="[('country_id', '=', billing_country_id)]")
     billing_country_id = fields.Many2one('res.country', string='Billing Country', ondelete='restrict',
@@ -79,6 +80,7 @@ class SaleOrderInherit(models.Model):
     # Delivery Address
     delivery_street = fields.Char(string="Delivery Address")
     delivery_street2 = fields.Char()
+    delivery_city = fields.Char()
     delivery_state_id = fields.Many2one("res.country.state", string='Delivery State', ondelete='restrict',
                                         domain="[('country_id', '=', delivery_country_id)]")
     delivery_country_id = fields.Many2one('res.country', string='Delivery Country', ondelete='restrict',
@@ -87,7 +89,7 @@ class SaleOrderInherit(models.Model):
 
     pickup_date = fields.Date('Pickup Date')
 
-    # jobsite_godowns = fields.Boolean(related='jobsite_id.godown_ids', store=False)
+    #jobsite_godowns = fields.Boolean(related='jobsite_id.godown_ids', store=False)
     godown = fields.Many2one("jobsite.godown", string='Godown', ondelete='restrict')
 
     delivery_date = fields.Date('Delivery Date')
@@ -211,6 +213,7 @@ class SaleOrderInherit(models.Model):
         if self.jobsite_id:
             self.delivery_street = self.jobsite_id.street
             self.delivery_street2 = self.jobsite_id.street2
+            self.delivery_city = self.jobsite_id.city
             self.delivery_state_id = self.jobsite_id.state_id
             self.delivery_country_id = self.jobsite_id.country_id
             self.delivery_zip = self.jobsite_id.zip
@@ -221,6 +224,7 @@ class SaleOrderInherit(models.Model):
             self.customer_branch = False
             self.billing_street = False
             self.billing_street2 = False
+            self.billing_city = False
             self.billing_state_id = False
             self.billing_zip = False
             self.billing_country_id = False
@@ -230,6 +234,7 @@ class SaleOrderInherit(models.Model):
         if self.customer_branch:
             self.billing_street = self.customer_branch.street
             self.billing_street2 = self.customer_branch.street2
+            self.billing_city = self.customer_branch.city
             self.billing_state_id = self.customer_branch.state_id
             self.billing_zip = self.customer_branch.zip
 
