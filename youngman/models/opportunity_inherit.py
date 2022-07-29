@@ -12,10 +12,8 @@ class CrmLead(models.Model):
 
     job_order = fields.Char(string="Job Order")
 
-    lead_qual = fields.Many2one(
-        'res.users', string='Lead Qualifier', default=lambda self: self.env.user,
-        domain="['&', ('share', '=', False), ('company_ids', 'in', user_company_ids)]",
-        check_company=True, index=True, tracking=True)
 
 
-    branch = fields.Many2one('jobsite.godown', string="Branch")
+
+    lead_qual = fields.Char(string="LQ Name")
+    lead_qual_num = fields.Char(string="LQ Number")

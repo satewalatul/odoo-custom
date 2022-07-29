@@ -24,6 +24,7 @@ class SaleOrderInherit(models.Model):
 
     tentative_quo = fields.Boolean('Tentative Quotation', default=False)
     partner_id = fields.Many2one(comodel_name='res.partner', domain="[('is_customer_branch', '=', False)]")
+    validity_date = fields.Date(invisible=True)
 
     customer_branch = fields.Many2one(comodel_name='res.partner', string='Customer Branch', domain="[('is_company', "
                                                                                                    "'=', True), "
