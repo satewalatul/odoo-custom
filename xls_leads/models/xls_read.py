@@ -37,37 +37,24 @@ class ReadXls(models.TransientModel):
         # my_credentials = service_account.Credentials.from_service_account_info(service_account_info, scopes=SCOPES)
         # client = pygsheets.authorize(custom_credentials=my_credentials)
 
-        client = pygsheets.authorize(service_account_file='')
-        sheet1 = client.open_by_url('')
+        client = pygsheets.authorize(service_account_file='odoo-custom/xls_leads/models/keys.json')
+        sheet1 = client.open_by_url('https://docs.google.com/spreadsheets/d/1joEMBnP87NFMrB0N11C0SzqvKYmn0CxKYv4hvQh2yUA')
         worksheet = sheet1.sheet1
-        cells = worksheet.get_all_values(include_tailing_empty_rows=False, include_tailing_empty=False,
-                                         returnas='matrix')
+        cells = worksheet.get_all_records(empty_value='', head=1, majdim='ROWS')
+
+
+
         end_row = len(cells)
-        indices = {
-            'NAME': 1,
-            'COMPANY': 2,
-            'REQUIREMENT': 3,
-            'CUSTOMER_NUMBER': 4 ,
-            'NAME': 5,
-            'NUMBER':6
-
-
-
-        }
         leads = [{
-
-            'contact_name': new_lst[indices['NAME']],
-            'partner_name': new_lst[indices['COMPANY']],
-            'name': new_lst[indices['REQUIREMENT']],
-            'phone': new_lst[indices['CUSTOMER_NUMBER']],
-            'lead_qual': new_lst[indices['NAME']],
-            'lead_qual_num': new_lst[indices['NUMBER']],
-
-
-
-        } for new_lst in cells[2:]]
+            'contact_name': lead['customer_name'],
+            'partner_name': lead['customer_company'],
+            'name': lead['customer_requirement'],
+            'phone': lead['customer_number'],
+            'lead_qual': lead['your_name'],
+            'lead_qual_num': lead['your_number']
+        } for lead in cells]
         print(leads)
-        #worksheet.delete_rows(8, number=5) //TO DELETE ROWS
+
         for lead in leads:
             try:
                 self.env['crm.lead'].create(lead)
@@ -75,5 +62,5 @@ class ReadXls(models.TransientModel):
                 tb =traceback.format_exc()
                 _logger.error(tb)
                 pass
-
+        # worksheet.delete_rows(2, number=end_row)
 
