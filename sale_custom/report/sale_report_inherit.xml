@@ -5,17 +5,32 @@
 			<div class="row">
 				<h5>Rental Agreement &amp; Quotation</h5>
 			</div>
+
+			<table class="table table-sm o_main_table">
+
+
+
+
+
+
 			<div class="row">
 				<strong>Customer Name: </strong><span t-field="doc.partner_id.name"/><br/>
 				<strong>Pickup Date: </strong><span t-field="doc.pickup_date"/><br/>
 				<strong>Sub Customer GST: </strong><span t-field="doc.partner_id.vat"/><br/>
 				<strong>Quotation Number: </strong><span t-field="doc.name"/><br/>
 				<strong>Quotation Date: </strong><span t-field="doc.date_order" t-options='{"widget": "date"}'/><br /><hr/>
-
-
 			</div>
 
-			<table class="table table-sm o_main_table">
+<!--				<table class="table table-sm o_main_table">-->
+<!--					<tbody class="customer_tbody">-->
+<!--						<tr>-->
+<!--							<th name="th_customer_name" class="text-left">CUSTOMER NAME</th>-->
+<!--							<td name="th_customer_name">-->
+<!--								<span t-field="doc.partner_id.name"/>-->
+<!--							</td>-->
+<!--                    	</tr>-->
+<!--					</tbody>-->
+<!--				</table>-->
                 <!-- In case we want to repeat the header, remove "display: table-row-group" -->
                 <thead style="display: table-row-group">
                     <tr>
@@ -32,12 +47,16 @@
 							<span t-field="doc.partner_id.zip"/>
 						</td>
 						<td name="td_delivery_addr">
-							<span t-field="doc.jobsite_id.street"/>
-							<span t-field="doc.jobsite_id.street2"/>
-							<span t-field="doc.jobsite_id.zip"/>
+							<span t-field="doc.delivery_street"/>
+							<span t-field="doc.delivery_street2"/>
+							<span t-field="doc.delivery_city"/>
+							<span t-field="doc.delivery_state_id.name"/>
+							<span t-field="doc.delivery_zip"/>
 						</td>
 						<td name="td_billing_addr">
-							<span t-field="doc.billing_address"/>
+							<span t-field="doc.billing_street"/>
+							<span t-field="doc.billing_street2"/>
+							<span t-field="doc.billing_city"/>
 							<span t-field="doc.billing_state_id.name"/>
 							<span t-field="doc.billing_zip"/>
 						</td>

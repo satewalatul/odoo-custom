@@ -135,10 +135,10 @@ class SaleOrderInherit(models.Model):
     rental_order = fields.Binary('Rental Order')
     security_cheque = fields.Binary('Security Cheque')
 
-    def check_customer_validation(self, vals):
-        if not vals['tentative_quo']:
-            if (self.partner_id.is_company == False) or (self.partner_id.is_customer_branch == True):
-                raise ValidationError(_("Please select a Company"))
+    # def check_customer_validation(self, vals):
+    #     if not vals['tentative_quo']:
+    #         if (self.partner_id.is_company == False) or (self.partner_id.is_customer_branch == True):
+    #             raise ValidationError(_("Please select a Company"))
 
     @api.model
     def _amount_all(self):
@@ -177,15 +177,15 @@ class SaleOrderInherit(models.Model):
             order.tax_totals_json = json.dumps(tax_totals)
 
 
-    @api.model
-    def create(self, vals):
-        self.check_customer_validation(vals)
-        return super(SaleOrderInherit, self).create(vals)
-
-    @api.model
-    def write(self, vals):
-        self.check_customer_validation(vals)
-        return super(SaleOrderInherit, self).write(vals)
+    # @api.model
+    # def create(self, vals):
+    #     self.check_customer_validation(vals)
+    #     return super(SaleOrderInherit, self).create(vals)
+    #
+    # @api.model
+    # def write(self, vals):
+    #     self.check_customer_validation(vals)
+    #     return super(SaleOrderInherit, self).write(vals)
 
     def action_confirm(self):
         if self.tentative_quo:
@@ -229,6 +229,9 @@ class SaleOrderInherit(models.Model):
             self.billing_state_id = False
             self.billing_zip = False
             self.billing_country_id = False
+
+        if ((self.partner_id) and (self.tentative_quo is False)) and ((self.partner_id.is_company is False) or (self.partner_id.is_customer_branch is True)):
+            raise ValidationError(_("Please select a Company"))
 
     @api.onchange('customer_branch')
     def get_billing_address(self):
