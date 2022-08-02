@@ -67,11 +67,12 @@ class SaleOrderInherit(models.Model):
         return country
 
     po_number = fields.Char(string="PO Number")
-
+    beta_quot_id = fields.Integer()
     # Billing Address
     billing_street = fields.Char(string="Billing Address")
     billing_street2 = fields.Char()
     billing_city = fields.Char()
+
     billing_state_id = fields.Many2one("res.country.state", string='Billing State', ondelete='restrict',
                                        domain="[('country_id', '=', billing_country_id)]")
     billing_country_id = fields.Many2one('res.country', string='Billing Country', ondelete='restrict',
@@ -340,6 +341,7 @@ class SaleOrderLineInherit(models.Model):
     _description = 'sale.order.line'
 
     item_code = fields.Char(string="Item Code")
+    beta_quot_item_id = fields.Integer()
 
     @api.onchange('price_unit')
     def min_price(self):
