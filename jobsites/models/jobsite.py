@@ -14,6 +14,8 @@ class JobsiteStage(models.Model):
 class JobsiteGodown(models.Model):
     _name = 'jobsite.godown'
     name = fields.Char(string="Name")
+    state_code = fields.Integer(string="State Code")
+    address = fields.Char(string="Godown Address")
     jobsite_id = fields.Many2one('jobsite', string='Jobsite')
     beta_id = fields.Integer()
 

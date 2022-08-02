@@ -3,40 +3,39 @@
     <template id="sale_report_inherit" inherit_id="sale.report_saleorder_document">
 		<xpath expr="//h2[@class='mt16']" position="replace">
 			<div class="row">
-				<h5>Rental Agreement &amp; Quotation</h5>
+				<h4>RENTAL AGREEMENT &amp; QUOTATION</h4>
 			</div>
 
-			<table class="table table-sm o_main_table">
+			<table id="customer_tab" class="table table-sm o_main_table" style="display: table-row-group">
+				<tr>
+					<td><strong>CUSTOMER NAME</strong></td>
+					<td><span t-field="doc.partner_id.name"/></td>
+				</tr>
+				<tr>
+					<td><strong>PICKUP DATE</strong></td>
+					<td><span t-field="doc.pickup_date"/></td>
+				</tr>
+				<tr>
+					<td><strong>SUB CUSTOMER GST</strong></td>
+					<td><span t-field="doc.partner_id.vat"/></td>
+				</tr>
+				<tr>
+					<td><strong>QUOTATION NUMBER</strong></td>
+					<td><span t-field="doc.name"/></td>
+				</tr>
+				<tr>
+					<td><strong>QUOTATION DATE</strong></td>
+					<td><span t-field="doc.date_order" t-options='{"widget": "date"}'/></td>
+				</tr>
+			</table><br/>
 
-
-
-
-
-
-			<div class="row">
-				<strong>Customer Name: </strong><span t-field="doc.partner_id.name"/><br/>
-				<strong>Pickup Date: </strong><span t-field="doc.pickup_date"/><br/>
-				<strong>Sub Customer GST: </strong><span t-field="doc.partner_id.vat"/><br/>
-				<strong>Quotation Number: </strong><span t-field="doc.name"/><br/>
-				<strong>Quotation Date: </strong><span t-field="doc.date_order" t-options='{"widget": "date"}'/><br /><hr/>
-			</div>
-
-<!--				<table class="table table-sm o_main_table">-->
-<!--					<tbody class="customer_tbody">-->
-<!--						<tr>-->
-<!--							<th name="th_customer_name" class="text-left">CUSTOMER NAME</th>-->
-<!--							<td name="th_customer_name">-->
-<!--								<span t-field="doc.partner_id.name"/>-->
-<!--							</td>-->
-<!--                    	</tr>-->
-<!--					</tbody>-->
-<!--				</table>-->
                 <!-- In case we want to repeat the header, remove "display: table-row-group" -->
-                <thead style="display: table-row-group">
+			<table id="quotation_tab" class="table table-sm o_main_table">
+				<thead style="display: table-row-group">
                     <tr>
-                        <th name="th_kind_attention" class="text-left">Kind Attention</th>
-                        <th name="th_delivery_addr" class="text-left">Delivery Address</th>
-                        <th name="th_billing_addr" class="text-left">Billing Address</th>
+                        <th name="th_kind_attention" class="text-left"><b>KIND ATTENTION</b></th>
+                        <th name="th_delivery_addr" class="text-left"><b>DELIVERY ADDRESS</b></th>
+                        <th name="th_billing_addr" class="text-left"><b>BILLING ADDRESS</b></th>
                     </tr>
                 </thead>
                 <tbody class="sale_tbody">

@@ -87,6 +87,8 @@ class SaleOrderInherit(models.Model):
     delivery_country_id = fields.Many2one('res.country', string='Delivery Country', ondelete='restrict',
                                           default=_get_default_country)
     delivery_zip = fields.Char(string='Delivery Pincode', change_default=True)
+    email_to = fields.Char(string='Email To')
+    email_cc = fields.Char(string='Email CC')
 
     pickup_date = fields.Date('Pickup Date')
 
@@ -94,6 +96,7 @@ class SaleOrderInherit(models.Model):
     godown = fields.Many2one("jobsite.godown", string='Godown', ondelete='restrict')
 
     delivery_date = fields.Date('Delivery Date')
+
     security_amount = fields.Monetary(string="Security Amount", currency_field='currency_id')
     freight_amount = fields.Monetary(string="Freight Amount", currency_field='currency_id')
     freight_paid_by = fields.Selection([
