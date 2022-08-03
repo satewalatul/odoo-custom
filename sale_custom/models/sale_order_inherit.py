@@ -94,7 +94,8 @@ class SaleOrderInherit(models.Model):
     pickup_date = fields.Date('Pickup Date')
 
     #jobsite_godowns = fields.Boolean(related='jobsite_id.godown_ids', store=False)
-    godown = fields.Many2one("jobsite.godown", string='Godown', ondelete='restrict')
+    godown = fields.Many2one("jobsite.godown", string='Godown', ondelete='restrict', domain="[('jobsite_id', '=', jobsite_id)]")
+    bill_godown = fields.Many2one("jobsite.godown", string='Billing Godown', ondelete='restrict')
 
     delivery_date = fields.Date('Delivery Date')
 
@@ -134,10 +135,10 @@ class SaleOrderInherit(models.Model):
     is_rental_order = fields.Boolean(related='customer_branch.rental_order', store=False)
     is_security_cheque = fields.Boolean(related='customer_branch.security_cheque', store=False)
 
-    security_letter = fields.Binary('Security Letter')
-    rental_advance = fields.Binary('Rental Advance')
-    rental_order = fields.Binary('Rental Order')
-    security_cheque = fields.Binary('Security Cheque')
+    security_letter = fields.Binary(string="Security Letter")
+    rental_advance = fields.Binary(string="Rental Advance")
+    rental_order = fields.Binary(string="Rental Order")
+    security_cheque = fields.Binary(string="Security Cheque")
 
     # def check_customer_validation(self, vals):
     #     if not vals['tentative_quo']:
@@ -206,6 +207,11 @@ class SaleOrderInherit(models.Model):
             raise ValidationError(_('Security Cheque is mandatory for this customer'))
 
         res = super(SaleOrderInherit, self).action_confirm()
+
+    @api.onchange('godown')
+    def get_bill_godown(self):
+        if self.godown:
+            self.bill_godown = self.godown
 
     @api.onchange('purchaser_name')
     def get_purchaser_phone(self):

@@ -41,6 +41,7 @@
                 <tbody class="sale_tbody">
 					<tr>
 						<td name="td_kind_attention">
+							<span t-field="doc.purchaser_name.name"/><br/>
 							<span t-field="doc.partner_id.street"/>
 							<span t-field="doc.partner_id.street2"/>
 							<span t-field="doc.partner_id.zip"/>
@@ -114,8 +115,8 @@
 				<p style="text-align:justify">Kindly issue a formal <strong>Work Order</strong> in the name of</p>
 				</li>
 				<li>
-				<p style="text-align:justify"><strong><span t-field="doc.godown.name"/></strong><br />
-				<strong><span t-field="doc.jobsite_id.street"/><![CDATA[&nbsp;]]><span t-field="doc.jobsite_id.street2"/><![CDATA[&nbsp;]]><br /><span t-field="doc.jobsite_id.city"/><![CDATA[&nbsp;]]><span t-field="doc.jobsite_id.state_id"/><![CDATA[&nbsp;]]><span t-field="doc.jobsite_id.zip"/><![CDATA[&nbsp;]]><span t-field="doc.jobsite_id.country_id"/><br />GSTIN: <span t-field="doc.partner_id.vat"/></strong></p>
+				<p style="text-align:justify"><strong><span t-field="doc.bill_godown.name"/></strong><br />
+				<strong><span t-field="doc.bill_godown.address"/></strong></p>
 				</li>
 				<li>
 				<p style="text-align:justify"><strong>One Month Advance</strong> is required and will be adjusted against the last bill of rental.</p>
@@ -197,10 +198,10 @@
 				YOUNGMAN SILVER COVER: waiver upto first INR 50,000 estimate value, by paying extra 15% of the rental value YOUNGMAN GOLD COVER: waiver upto first INR 1,00,000 estimate value, by paying extra 25% of the rental value</p>
 				</li>
 				<li>
-				<p style="text-align:justify">Atthetimeofdeliveryofmaterial,materialchecklistissignedbyyourrepresentativeandcanbeusedattimeofpickuptojustifyifany claims are fair or not.</p>
+				<p style="text-align:justify">At the time of delivery of material, material checklist is signed by your representative and can be used at time of pickup to justify if any claims are fair or not.</p>
 				</li>
 				<li>
-				<p style="text-align:justify">Damage Policy &amp; Price: https://youngmanbeta.s3.ap-south-1.amazonaws.com/damage_policy_jan_2021.pdf Missing Policy &amp; Price: https://youngmanbeta.s3.ap-south-1.amazonaws.com/missing_policy_jan_2021.pdf</p>
+					<p style="text-align:justify">Damage Policy &amp; Price: <u>https://youngmanbeta.s3.ap-south-1.amazonaws.com/damage_policy_jan_2021.pdf</u>> Missing Policy &amp; Price: <u>https://youngmanbeta.s3.ap-south-1.amazonaws.com/missing_policy_jan_2021.pdf</u></p>
 				</li>
 				<li>
 				<p style="text-align:justify">The above policies are by default accepted by the customer in case they place an order, and in any case if they disagree they have to explicitly mention the same at time of placing order in a written format.</p>
