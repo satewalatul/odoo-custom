@@ -13,9 +13,7 @@
     'depends': ['base', 'crm'],
 
     'demo': [],
-    'external_dependencies': {
-        'python': ['google'],
-    },
+
     'installable': True,
     'application': True,
 
