@@ -14,6 +14,11 @@ class PartnerInherit(models.Model):
     _name = 'res.partner'
     _inherit = 'res.partner'
 
+    @api.model
+    def _get_default_country(self):
+        country = self.env['res.country'].search([('code', '=', 'IN')], limit=1)
+        return country
+
     def _default_channel_tag(self):
         return self.env['res.partner.channel.tag'].browse(self._context.get('channel_tag_id'))
 
@@ -39,12 +44,13 @@ class PartnerInherit(models.Model):
         ('2', 'UNBLOCKED'),
     ], string='CPL Status')
 
-    bill_submission = fields.Many2one('res.partner.bill.sub', string='Bill Submission')
-    security_letter = fields.Boolean(default=False, string="Security Letter")
-    rental_advance = fields.Boolean(default=False, string="Rental Advance")
-    rental_order = fields.Boolean(default=False, string="Rental Order")
-    security_cheque = fields.Boolean(default=False, string="Security Cheque")
+    bill_submission = fields.Many2one('res.partner.bill.sub', string='Bill Submission', required=True)
+    rental_advance = fields.Boolean(default=True, string="Rental Advance")
+    rental_order = fields.Boolean(default=True, string="Rental Order")
+    security_cheque = fields.Boolean(default=True, string="Security Cheque")
     user_recievable_id = fields.Integer()
+
+    country_id = fields.Many2one('res.country', string='Mailing Country', default=_get_default_country, ondelete='restrict')
 
     # Mailing Address
     mailing_street = fields.Char(string="Mailing Address")
@@ -52,7 +58,7 @@ class PartnerInherit(models.Model):
     mailing_city = fields.Char()
     mailing_state_id = fields.Many2one("res.country.state", string='Mailing State', ondelete='restrict',
                                        domain="[('country_id', '=', mailing_country_id)]")
-    mailing_country_id = fields.Many2one('res.country', string='Mailing Country', ondelete='restrict')
+    mailing_country_id = fields.Many2one('res.country', string='Mailing Country', default=_get_default_country, ondelete='restrict')
     mailing_zip = fields.Char(string='Mailing Pincode', change_default=True)
 
     child_ids = fields.One2many('res.partner', 'parent_id', string='Contact',
@@ -69,6 +75,17 @@ class PartnerInherit(models.Model):
 
     bd_tag_user_ids = fields.One2many('contact.team.users', 'contact_id', string='Contact Team Users',
                                       help="Users having this BD Tag as team name")
+
+    same_addr = fields.Boolean(default=False)
+
+    @api.onchange('same_addr')
+    def _onchange_same_addr(self):
+        if self.same_addr:
+            self.mailing_street = self.street
+            self.mailing_street2 = self.street2
+            self.mailing_city = self.city
+            self.mailing_state_id = self.state_id
+            self.mailing_zip = self.zip
 
     @api.onchange('bd_tag_ids')
     def _onchange_bd_tag_ids(self):

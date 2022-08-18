@@ -137,7 +137,7 @@ class Partner(models.Model):
             self.street2 = gst_data["data"]["pradr"]["addr"]["st"]
             self.city = gst_data["data"]["pradr"]["addr"]["city"]
             self.zip = str(gst_data["data"]["pradr"]["addr"]["pncd"]) if gst_data["data"]["pradr"]["addr"]["pncd"] is not None else None
-            self.country_id = self.get_country("IN")
+            #self.country_id = self.get_country("IN")
 
 
         except Exception as e:

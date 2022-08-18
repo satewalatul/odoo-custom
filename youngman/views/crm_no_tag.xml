@@ -13,21 +13,5 @@
           </field>
       </record>
 
-      <record  model="ir.ui.view" id="crm_opportunity_inherit">
-          <field name="name">crm.opportunity.inherit</field>
-          <field name="model">crm.lead</field>
-          <field name="inherit_id" ref="crm.crm_lead_view_form"/>
-          <field name="arch" type="xml">
-              <field name="tag_ids" position="after">
-                    <field name="job_order" attrs="{'invisible': [('type','=', 'lead')]}"/>
-              </field>
-              <field name="user_id" position="before">
-                    <field name="lead_qual"/>
-                    <field name="lead_qual_num" />
-              </field>
-
-          </field>
-      </record>
-
   </data>
 </odoo>

@@ -79,13 +79,10 @@
                    <field name="email_cc"/>
 
                    <div>
-                        <field name="is_security_letter"  attrs="{'invisible': True}"/>
                         <field name="is_rental_advance"  attrs="{'invisible': True}"/>
                         <field name="is_rental_order"  attrs="{'invisible': True}"/>
                         <field name="is_security_cheque"  attrs="{'invisible': True}"/>
 
-                        <label for="security_letter" string="Security Letter" attrs="{'invisible': [('is_security_letter', '=', False)]}"/>
-                        <field name="security_letter" attrs="{'invisible': [('is_security_letter', '=', False)]}"/>
 
                         <label for="rental_advance" string="Rental Advance" attrs="{'invisible': [('is_rental_advance', '=', False)]}"/>
                         <field name="rental_advance" attrs="{'invisible': [('is_rental_advance', '=', False)]}"/>

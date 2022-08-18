@@ -14,6 +14,18 @@ from odoo.exceptions import ValidationError
 _logger = logging.getLogger(__name__)
 
 
+class ResPartnerInherited(models.Model):
+    _inherit = 'res.partner'
+
+    def name_get(self):
+        result = []
+
+        for rec in self:
+            result.append((rec.id, '%s - %s' % (rec.name, rec.gstn)))
+        return result
+
+
+
 class SaleOrderInherit(models.Model):
     _name = 'sale.order'
     _inherit = 'sale.order'
@@ -26,7 +38,7 @@ class SaleOrderInherit(models.Model):
     partner_id = fields.Many2one(comodel_name='res.partner', domain="[('is_customer_branch', '=', False)]")
     validity_date = fields.Date(invisible=True)
 
-    customer_branch = fields.Many2one(comodel_name='res.partner', string='Customer Branch', domain="[('is_company', "
+    customer_branch = fields.Many2one(comodel_name='res.partner', string='Customer GSTs', domain="[('is_company', "
                                                                                                    "'=', True), "
                                                                                                    "('is_customer_branch', '=', True), ('parent_id', '=', partner_id)]")
     # @api.model
@@ -130,12 +142,10 @@ class SaleOrderInherit(models.Model):
     otp = fields.Integer(string='OTP', store=False)
     otp_verified = fields.Boolean(string='OTP', store=False, default=False)  # TODO compute field should be equal to
 
-    is_security_letter = fields.Boolean(related='customer_branch.security_letter', store=False)
     is_rental_advance = fields.Boolean(related='customer_branch.rental_advance', store=False)
     is_rental_order = fields.Boolean(related='customer_branch.rental_order', store=False)
     is_security_cheque = fields.Boolean(related='customer_branch.security_cheque', store=False)
 
-    security_letter = fields.Binary(string="Security Letter")
     rental_advance = fields.Binary(string="Rental Advance")
     rental_order = fields.Binary(string="Rental Order")
     security_cheque = fields.Binary(string="Security Cheque")
