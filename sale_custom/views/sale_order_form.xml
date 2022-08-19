@@ -94,6 +94,8 @@
                         <field name="security_cheque" attrs="{'invisible': [('is_security_cheque', '=', False)]}"/>
                    </div>
                 </xpath>
+
+
             </field>
         </record>
 
@@ -128,6 +130,8 @@
                 </group>
             </field>
         </record>
+
+
 
     </data>
 </odoo>
