@@ -408,7 +408,7 @@ odoo.define('web_google_maps.GplaceAutocompleteFields', function (require) {
                     if (!this.places_autocomplete) {
                         const google_fields = this.get_google_fields_restriction();
                         this.places_autocomplete = new google.maps.places.Autocomplete(this.$input.get(0), {
-                            types: this.autocomplete_types,
+                            types: [],
                             fields: google_fields,
                         });
                         if (this.autocomplete_settings) {
@@ -484,7 +484,7 @@ odoo.define('web_google_maps.GplaceAutocompleteFields', function (require) {
             };
             this.address_mode = 'address_format';
             // Autocomplete request types
-            this.autocomplete_types = ['establishment'];
+            this.autocomplete_types = [];
         },
         prepareWidgetOptions: function () {
             if (Object.prototype.hasOwnProperty.call(this.attrs.options, 'mode')) {
