@@ -17,7 +17,7 @@
                                 <attribute name="options">{'no_create_edit': True, 'no_create': True, 'create_edit':False, 'create':False}</attribute>
                             </field>
                             <field name="godown"/>
-                            <field name="bill_godown"/>
+                            <field name="bill_godown" invisible="1"/>
 
                             <label for="delivery_street" string="Delivery Address"/>
                             <div class="o_address_format">

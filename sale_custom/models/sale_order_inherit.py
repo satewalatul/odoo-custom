@@ -107,7 +107,7 @@ class SaleOrderInherit(models.Model):
 
     @api.model
     def _get_default_godowns(self):
-        godown = self.env['jobsite.godown'].search([('id', 'in', self.jobsite_id.godown_ids)]).name
+        godown = self.env['jobsite.godown'].search([('id', 'in', self.jobsite_id.godown_id)]).name
         return godown
 
     #jobsite_godowns = fields.Boolean(related='jobsite_id.godown_ids', store=False)
