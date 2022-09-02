@@ -46,9 +46,7 @@
                         </div>
 
                      </field>
-<!--                <xpath expr="//group[@name='order_details']/field[@name='date_order']" position="attributes">-->
-<!--                <attribute name ="attrs"> {'invisible' : True} </attribute>-->
-<!--                </xpath>-->
+
                 <xpath expr="//group[@name='order_details']/field[@name='validity_date']" position="attributes">
                 <attribute name ="attrs"> {'invisible' : True} </attribute>
                 </xpath>
@@ -93,14 +91,14 @@
                         <field name="is_security_cheque"  attrs="{'invisible': True}"/>
 
 
-                        <label for="rental_advance" string="Rental Advance" attrs="{'invisible': [('is_rental_advance', '=', False)]}"/>
-                        <field name="rental_advance" attrs="{'invisible': [('is_rental_advance', '=', False)]}"/>
+<!--                        <label for="rental_advance" string="Rental Advance" attrs="{'invisible': [('is_rental_advance', '=', False)]}"/>-->
+<!--                        <field name="rental_advance" attrs="{'invisible': [('is_rental_advance', '=', False)]}"/>-->
 
-                        <label for="rental_order" string="Rental Order" attrs="{'invisible': [('is_rental_order', '=', False)]}"/>
-                        <field name="rental_order" attrs="{'invisible': [('is_rental_order', '=', False)]}"/>
+<!--                        <label for="rental_order" string="Rental Order" attrs="{'invisible': [('is_rental_order', '=', False)]}"/>-->
+<!--                        <field name="rental_order" attrs="{'invisible': [('is_rental_order', '=', False)]}"/>-->
 
-                        <label for="security_cheque" string="Security Cheque" attrs="{'invisible': [('is_security_cheque', '=', False)]}"/>
-                        <field name="security_cheque" attrs="{'invisible': [('is_security_cheque', '=', False)]}"/>
+<!--                        <label for="security_cheque" string="Security Cheque" attrs="{'invisible': [('is_security_cheque', '=', False)]}"/>-->
+<!--                        <field name="security_cheque" attrs="{'invisible': [('is_security_cheque', '=', False)]}"/>-->
                    </div>
                 </xpath>
 
