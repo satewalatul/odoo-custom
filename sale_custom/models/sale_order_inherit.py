@@ -14,19 +14,17 @@ from odoo.exceptions import ValidationError
 _logger = logging.getLogger(__name__)
 
 
-class ResPartnerInherited(models.Model):
-    _inherit = 'res.partner'
-
-    def name_get(self):
-        result = []
-
-        for rec in self:
-            if rec.is_customer_branch:
-                result.append((rec.id, '%s - %s' % (rec.gstn, rec.state_id.name)))
-            else:
-                result.append((rec.id, rec.name))
-        return result
-
+# class ResPartnerInherited(models.Model):
+#     _inherit = 'res.partner'
+#
+#     def name_get(self):
+#         result = []
+#         for rec in self:
+#             if rec.is_customer_branch:
+#                 result.append((rec.id, '%s - %s' % (rec.gstn, rec.state_id.name)))
+#             else:
+#                 result.append((rec.id, rec.name))
+#         return result
 
 
 class SaleOrderInherit(models.Model):
@@ -83,6 +81,7 @@ class SaleOrderInherit(models.Model):
 
     po_number = fields.Char(string="PO Number")
     beta_quot_id = fields.Integer()
+
     # Billing Address
     billing_street = fields.Char(string="Billing Address")
     billing_street2 = fields.Char()
@@ -114,7 +113,7 @@ class SaleOrderInherit(models.Model):
         return godown
 
     #jobsite_godowns = fields.Boolean(related='jobsite_id.godown_ids', store=False)
-    godown = fields.Many2one("jobsite.godown", string='Godown', ondelete='restrict', default=_get_default_godowns)
+    godown = fields.Many2one("jobsite.godown", string='Godown', ondelete='restrict')
     bill_godown = fields.Many2one("jobsite.godown", string='Billing Godown', ondelete='restrict')
 
     delivery_date = fields.Date('Delivery Date')
@@ -226,10 +225,10 @@ class SaleOrderInherit(models.Model):
 
         res = super(SaleOrderInherit, self).action_confirm()
 
-    @api.onchange('godown')
-    def get_bill_godown(self):
-        if self.godown:
-            self.bill_godown = self.godown
+    # @api.onchange('godown')
+    # def get_bill_godown(self):
+    #     if self.godown:
+    #         self.bill_godown = self.godown
 
     @api.onchange('purchaser_name')
     def get_purchaser_phone(self):
@@ -246,6 +245,7 @@ class SaleOrderInherit(models.Model):
             self.delivery_state_id = self.jobsite_id.state_id
             self.delivery_country_id = self.jobsite_id.country_id
             self.delivery_zip = self.jobsite_id.zip
+            self.godown = self.jobsite_id.godown_id
 
     @api.onchange('partner_id')
     def clear_customer_branch(self):

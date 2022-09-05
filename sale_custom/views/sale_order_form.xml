@@ -8,7 +8,7 @@
             <field name="arch" type="xml">
 
                    <field name="partner_id" position="replace" >
-                            <field name="partner_id" />
+                            <field name="partner_id"/>
                             <field name="customer_branch" attrs="{'invisible': [('tentative_quo', '=', True)]}" position="attributes">
                                 <attribute name="options">{'no_create_edit': True, 'no_create': True, 'create_edit':False, 'create':False, 'is_company': True, 'is_customer_branch': True}</attribute>
                             </field>
