@@ -40,6 +40,19 @@ class SaleOrderInherit(models.Model):
     tentative_quo = fields.Boolean('Tentative Quotation', default=False)
     partner_id = fields.Many2one(comodel_name='res.partner', domain="[('is_customer_branch', '=', False)]")
     validity_date = fields.Date(invisible=True)
+    job_order = fields.Char(string="Job Order")
+
+    place_of_supply = fields.Char(string="Place of Supply")
+    first_bill = fields.Integer(string="First Bill")
+    rental_advance = fields.Char(string="Rental Advance")
+    rental_order = fields.Char(string="Rental Order")
+    security_cheque = fields.Char(string="Security Cheque")
+    amendment_doc = fields.Char(string="Amendment Doc")
+    released_at = fields.Datetime(string="Released At")
+    reason_of_release = fields.Char(string="Reason of Release")
+    is_authorized = fields.Integer(string="Is Authorized")
+    part_pickup = fields.Integer(string="Part Pickup")
+    remark = fields.Char(string="Remark")
 
     customer_branch = fields.Many2one(comodel_name='res.partner', string='Customer GSTs', domain="[('is_company', "
                                                                                                    "'=', True), "
@@ -215,8 +228,6 @@ class SaleOrderInherit(models.Model):
             raise ValidationError(_("Confirmation of tentative quotation is not allowed"))
         if not self.po_number:
             raise ValidationError(_('PO Number is mandatory for confirming a quotation'))
-        if self.security_letter is None and self.customer_branch.security_letter is True:
-            raise ValidationError(_('Security Letter is mandatory for this customer'))
         if self.rental_order is None and self.customer_branch.rental_order is True:
             raise ValidationError(_('Rental Order is mandatory for this customer'))
         if self.rental_advance is None and self.customer_branch.rental_advance is True:
@@ -321,15 +332,14 @@ class SaleOrderInherit(models.Model):
         return code[:6]
 
 
-class ItemsCategory(models.Model):
-    _name = 'items.category'
-    _description = "Items Category"
-    name = fields.Char(string='Category')
-
 
 class ProductTemplateInherit(models.Model):
     _name = 'product.template'
     _inherit = 'product.template'
+
+    detailed_type = fields.Selection(default='service', readonly=True)
+    invoice_policy = fields.Selection(default='delivery', readonly=True)
+
 
     status = fields.Selection([
         ('0', 'ACTIVE'),
@@ -353,12 +363,11 @@ class ProductTemplateInherit(models.Model):
     item_type = fields.Char(string="Item Type")
     purchase_code = fields.Char(string="Purchase Code")
     supplier = fields.Char(string="Supplier")
-    category = fields.Many2one(comodel_name='items.category', string='Category')
     standard_price = fields.Float(
         'Estimate Value', company_dependent=True, digits=(12, 2),
-        groups="base.group_user",
-    )
-
+        groups="base.group_user",)
+    list_price = fields.Float('Rental Price')
+    default_code = fields.Char(string="Product Code")
 
 class SaleOrderLineInherit(models.Model):
     _inherit = 'sale.order.line'
