@@ -84,6 +84,19 @@
                    <field name="pickup_date" attrs="{'required': [('tentative_quo', '=', False)]}"/>
                    <field name="email_to"/>
                    <field name="email_cc"/>
+                   <field name="job_order"/>
+                   <field name="po_number"/>
+                   <field name="place_of_supply"/>
+                   <field name="first_bill"/>
+                   <field name="rental_advance"/>
+                   <field name="rental_order"/>
+                   <field name="security_cheque"/>
+                   <field name="amendment_doc"/>
+                   <field name="released_at"/>
+                   <field name="reason_of_release"/>
+                   <field name="is_authorized"/>
+                   <field name="part_pickup"/>
+                   <field name="remark"/>
 
                    <div>
                         <field name="is_rental_advance"  attrs="{'invisible': True}"/>
@@ -111,6 +124,8 @@
             <field name="model">product.template</field>
             <field name="inherit_id" ref="product.product_template_only_form_view"/>
             <field name="arch" type="xml">
+<!--                <xpath expr="//field[@name='detailed_type']"></xpath>-->
+                <xpath expr="//field[@name='barcode']" position="replace"></xpath>
                 <group>
                     <group>
                         <field name="category"></field>
@@ -124,6 +139,7 @@
                         <field name="cft"></field>
                     </group>
                     <group>
+                        <field name="barcode"  attrs="{'invisible': True}"></field>
                         <field name="missing_estimate_value"></field>
                         <field name="material"></field>
                         <field name="item_type"></field>

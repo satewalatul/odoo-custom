@@ -38,6 +38,24 @@ class SaleOrderInherit(models.Model):
     tentative_quo = fields.Boolean('Tentative Quotation', default=False)
     partner_id = fields.Many2one(comodel_name='res.partner', domain="[('is_customer_branch', '=', False)]")
     validity_date = fields.Date(invisible=True)
+    job_order = fields.Char(string="Job Order")
+
+    place_of_supply = fields.Char(string="Place of Supply")
+    first_bill = fields.Boolean(string="First Bill", default=True)
+    rental_advance = fields.Char(string="Rental Advance")
+    rental_order = fields.Char(string="Rental Order")
+    security_cheque = fields.Char(string="Security Cheque")
+    amendment_doc = fields.Char(string="Amendment Doc")
+    released_at = fields.Datetime(string="Released At")
+    reason_of_release = fields.Selection([
+        ('customer_request', 'Customer Request'),
+        ('order_fullfilled', 'Order Fulfilled'),
+        ('reason_of_release', 'Reason of Release')],
+        string="Reason of Release",
+        default='monthly')
+    is_authorized = fields.Boolean(string="Is Authorized", default=False)
+    part_pickup = fields.Boolean(string="Part Pickup", default=False)
+    remark = fields.Char(string="Remark")
 
     customer_branch = fields.Many2one(comodel_name='res.partner', string='Customer GSTs', domain="[('is_company', "
                                                                                                    "'=', True), "
@@ -214,8 +232,6 @@ class SaleOrderInherit(models.Model):
             raise ValidationError(_("Confirmation of tentative quotation is not allowed"))
         if not self.po_number:
             raise ValidationError(_('PO Number is mandatory for confirming a quotation'))
-        if self.security_letter is None and self.customer_branch.security_letter is True:
-            raise ValidationError(_('Security Letter is mandatory for this customer'))
         if self.rental_order is None and self.customer_branch.rental_order is True:
             raise ValidationError(_('Rental Order is mandatory for this customer'))
         if self.rental_advance is None and self.customer_branch.rental_advance is True:
@@ -225,10 +241,10 @@ class SaleOrderInherit(models.Model):
 
         res = super(SaleOrderInherit, self).action_confirm()
 
-    # @api.onchange('godown')
-    # def get_bill_godown(self):
-    #     if self.godown:
-    #         self.bill_godown = self.godown
+    @api.onchange('godown')
+    def get_bill_godown(self):
+        if self.godown:
+            self.bill_godown = self.godown
 
     @api.onchange('purchaser_name')
     def get_purchaser_phone(self):
@@ -331,6 +347,10 @@ class ProductTemplateInherit(models.Model):
     _name = 'product.template'
     _inherit = 'product.template'
 
+    detailed_type = fields.Selection(default='service', readonly=True)
+    invoice_policy = fields.Selection(default='delivery', readonly=True)
+
+
     status = fields.Selection([
         ('0', 'ACTIVE'),
         ('1', 'DEACTIVE'),
@@ -356,9 +376,9 @@ class ProductTemplateInherit(models.Model):
     category = fields.Many2one(comodel_name='items.category', string='Category')
     standard_price = fields.Float(
         'Estimate Value', company_dependent=True, digits=(12, 2),
-        groups="base.group_user",
-    )
-
+        groups="base.group_user",)
+    list_price = fields.Float('Rental Price')
+    default_code = fields.Char(string="Product Code")
 
 class SaleOrderLineInherit(models.Model):
     _inherit = 'sale.order.line'
