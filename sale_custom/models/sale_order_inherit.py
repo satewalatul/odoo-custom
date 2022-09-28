@@ -337,11 +337,6 @@ class SaleOrderInherit(models.Model):
         return code[:6]
 
 
-class ItemsCategory(models.Model):
-    _name = 'items.category'
-    _description = "Items Category"
-    name = fields.Char(string='Category')
-
 
 class ProductTemplateInherit(models.Model):
     _name = 'product.template'
@@ -373,7 +368,6 @@ class ProductTemplateInherit(models.Model):
     item_type = fields.Char(string="Item Type")
     purchase_code = fields.Char(string="Purchase Code")
     supplier = fields.Char(string="Supplier")
-    category = fields.Many2one(comodel_name='items.category', string='Category')
     standard_price = fields.Float(
         'Estimate Value', company_dependent=True, digits=(12, 2),
         groups="base.group_user",)

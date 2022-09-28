@@ -30,7 +30,6 @@
                             </div>
 
                             <field name="delivery_date" attrs="{'required': [('tentative_quo', '=', False)]}"/>
-                            <field name="po_number"/>
 
                             <field name="freight_amount" attrs="{'required': [('tentative_quo', '=', False)]}"/>
                             <field name="security_amount" attrs="{'required': [('tentative_quo', '=', False)]}"/>
@@ -128,7 +127,6 @@
                 <xpath expr="//field[@name='barcode']" position="replace"></xpath>
                 <group>
                     <group>
-                        <field name="category"></field>
                         <field name="status"></field>
                         <field name="meters"></field>
                         <field name="length"></field>
@@ -145,13 +143,13 @@
                         <field name="item_type"></field>
                         <field name="purchase_code"></field>
                         <field name="supplier"></field>
-                        <field name="standard_price"></field>
                         <field name="bundle"></field>
                         <field name="consumable"></field>
                         <field name="serialized"></field>
                      </group>
                 </group>
             </field>
+
         </record>
 
 
