@@ -30,7 +30,6 @@
                             </div>
 
                             <field name="delivery_date" attrs="{'required': [('tentative_quo', '=', False)]}"/>
-                            <field name="po_number"/>
 
                             <field name="freight_amount" attrs="{'required': [('tentative_quo', '=', False)]}"/>
                             <field name="security_amount" attrs="{'required': [('tentative_quo', '=', False)]}"/>
