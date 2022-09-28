@@ -51,8 +51,7 @@ class SaleOrderInherit(models.Model):
         ('customer_request', 'Customer Request'),
         ('order_fullfilled', 'Order Fulfilled'),
         ('reason_of_release', 'Reason of Release')],
-        string="Reason of Release",
-        default='monthly')
+        string="Reason of Release")
     is_authorized = fields.Boolean(string="Is Authorized", default=False)
     part_pickup = fields.Boolean(string="Part Pickup", default=False)
     remark = fields.Char(string="Remark")
