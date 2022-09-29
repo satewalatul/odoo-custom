@@ -31,29 +31,24 @@ class SaleOrderInherit(models.Model):
     _name = 'sale.order'
     _inherit = 'sale.order'
 
-    jobsite_id = fields.Many2one(
-        'jobsite', string='Site Name', index=True, tracking=10,
-        help="Linked site (optional). You can find a site by its Name.")
-
+    jobsite_id = fields.Many2one('jobsite', string='Site Name')
     tentative_quo = fields.Boolean('Tentative Quotation', default=False)
     partner_id = fields.Many2one(comodel_name='res.partner', domain="[('is_customer_branch', '=', False)]")
     validity_date = fields.Date(invisible=True)
     job_order = fields.Char(string="Job Order")
-
     place_of_supply = fields.Char(string="Place of Supply")
-    first_bill = fields.Boolean(string="First Bill", default=True)
     rental_advance = fields.Char(string="Rental Advance")
     rental_order = fields.Char(string="Rental Order")
     security_cheque = fields.Char(string="Security Cheque")
-    amendment_doc = fields.Char(string="Amendment Doc")
-    released_at = fields.Datetime(string="Released At")
-    reason_of_release = fields.Selection([
-        ('customer_request', 'Customer Request'),
-        ('order_fullfilled', 'Order Fulfilled'),
-        ('reason_of_release', 'Reason of Release')],
-        string="Reason of Release")
-    is_authorized = fields.Boolean(string="Is Authorized", default=False)
-    part_pickup = fields.Boolean(string="Part Pickup", default=False)
+    # amendment_doc = fields.Char(string="Amendment Doc")
+    # released_at = fields.Datetime(string="Released At")
+    # reason_of_release = fields.Selection([
+    #     ('customer_request', 'Customer Request'),
+    #     ('order_fullfilled', 'Order Fulfilled'),
+    #     ('reason_of_release', 'Reason of Release')],
+    #     string="Reason of Release")
+    # is_authorized = fields.Boolean(string="Is Authorized", default=False)
+    # part_pickup = fields.Boolean(string="Part Pickup", default=False)
     remark = fields.Char(string="Remark")
 
     customer_branch = fields.Many2one(comodel_name='res.partner', string='Customer GSTs', domain="[('is_company', "
@@ -97,6 +92,9 @@ class SaleOrderInherit(models.Model):
         return country
 
     po_number = fields.Char(string="PO Number")
+    po_amount = fields.Char(string="PO Amount")
+    po_date = fields.Date(string='PO Date')
+
     beta_quot_id = fields.Integer()
 
     # Billing Address
