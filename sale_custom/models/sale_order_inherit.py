@@ -42,8 +42,7 @@ class SaleOrderInherit(models.Model):
     validity_date = fields.Date(invisible=True)
     job_order = fields.Char(string="Job Order")
 
-    supply_country_id = fields.Many2one('res.country', ondelete='restrict', default=_get_default_country)
-    place_of_supply = fields.Many2one("res.country.state", string='Place of Supply', ondelete='restrict', domain="[('country_id', '=', supply_country_id)]")
+    place_of_supply = fields.Many2one("res.country.state", string='Place of Supply', ondelete='restrict', domain="[('country_id', '=', billing_country_id)]")
     rental_advance = fields.Char(string="Rental Advance")
     rental_order = fields.Char(string="Rental Order")
     security_cheque = fields.Char(string="Security Cheque")
