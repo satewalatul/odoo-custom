@@ -31,12 +31,21 @@ class SaleOrderInherit(models.Model):
     _name = 'sale.order'
     _inherit = 'sale.order'
 
+    @api.model
+    def _get_default_country(self):
+        country = self.env['res.country'].search([('code', '=', 'IN')], limit=1)
+        return country
+
     jobsite_id = fields.Many2one('jobsite', string='Site Name')
     tentative_quo = fields.Boolean('Tentative Quotation', default=False)
     partner_id = fields.Many2one(comodel_name='res.partner', domain="[('is_customer_branch', '=', False)]")
     validity_date = fields.Date(invisible=True)
     job_order = fields.Char(string="Job Order")
-    place_of_supply = fields.Char(string="Place of Supply")
+
+    supply_country_id = fields.Many2one('res.country', string='Delivery Country', ondelete='restrict',
+                                          default=_get_default_country)
+    place_of_supply = fields.Many2one("res.country.state", string='Place of Supply', ondelete='restrict',
+                                       domain="[('country_id', '=', supply_country_id)]")
     rental_advance = fields.Char(string="Rental Advance")
     rental_order = fields.Char(string="Rental Order")
     security_cheque = fields.Char(string="Security Cheque")
@@ -86,11 +95,6 @@ class SaleOrderInherit(models.Model):
     #         order.tax_totals_json = json.dumps(tax_totals)
 
 
-    @api.model
-    def _get_default_country(self):
-        country = self.env['res.country'].search([('code', '=', 'IN')], limit=1)
-        return country
-
     po_number = fields.Char(string="PO Number")
     po_amount = fields.Char(string="PO Amount")
     po_date = fields.Date(string='PO Date')
@@ -101,21 +105,22 @@ class SaleOrderInherit(models.Model):
     billing_street = fields.Char(string="Billing Address")
     billing_street2 = fields.Char()
     billing_city = fields.Char()
-
-    billing_state_id = fields.Many2one("res.country.state", string='Billing State', ondelete='restrict',
-                                       domain="[('country_id', '=', billing_country_id)]")
     billing_country_id = fields.Many2one('res.country', string='Billing Country', ondelete='restrict',
                                          default=_get_default_country)
+    billing_state_id = fields.Many2one("res.country.state", string='Billing State', ondelete='restrict',
+                                       domain="[('country_id', '=', billing_country_id)]")
+
     billing_zip = fields.Char(string='Billing Pincode', change_default=True)
 
     # Delivery Address
     delivery_street = fields.Char(string="Delivery Address")
     delivery_street2 = fields.Char()
     delivery_city = fields.Char()
-    delivery_state_id = fields.Many2one("res.country.state", string='Delivery State', ondelete='restrict',
-                                        domain="[('country_id', '=', delivery_country_id)]")
     delivery_country_id = fields.Many2one('res.country', string='Delivery Country', ondelete='restrict',
                                           default=_get_default_country)
+    delivery_state_id = fields.Many2one("res.country.state", string='Delivery State', ondelete='restrict',
+                                        domain="[('country_id', '=', delivery_country_id)]")
+
     delivery_zip = fields.Char(string='Delivery Pincode', change_default=True)
     email_to = fields.Char(string='Email To')
     email_cc = fields.Char(string='Email CC')
