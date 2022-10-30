@@ -1,30 +1,24 @@
 # -*- coding: utf-8 -*-
+
 {
-    'name': "ym_sms",
-
-    'summary': """
-        Short (1 phrase/line) summary of the module's purpose, used as
-        subtitle on modules listing or apps.openerp.com""",
-
+    'name': "SMS Manager",
+    'version': '1.0',
+    'category': 'Sales/CRM',
+    'summary': 'SMS Management Module for Quotations/Orders',
     'description': """
-        Long description of module's purpose
+        Manages SMS in Unit Price in Quotations/Orders
     """,
+    'author': "Ajay",
+    'website': "https://www.youngman.co.in/",
+    'sequence': -100,
 
-    'author': "My Company",
-    'website': "http://www.yourcompany.com",
-
-    # Categories can be used to filter modules in modules listing
-    # Check https://github.com/odoo/odoo/blob/14.0/odoo/addons/base/data/ir_module_category_data.xml
-    # for the full list
-    'category': 'Uncategorized',
-    'version': '0.1',
-
-    # any module necessary for this one to work correctly
     'depends': ['base'],
 
-    # always loaded
     'data': [
-        #'security/ir.model.access.csv',
         'views/views.xml',
-    ]
+    ],
+
+    'application': True,
+    'installable': True,
+    'auto_install': False,
 }
