@@ -16,8 +16,8 @@
                         </div>
                         
                         <div class="o_setting_left_pane">
-                            <label for="url"/>
-                            <field name="url"/>
+                            <label for="endpoint"/>
+                            <field name="endpoint"/>
                         </div>
                         
                         <div class="o_setting_left_pane">
