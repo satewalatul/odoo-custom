@@ -6,7 +6,7 @@ class ResConfigSettings(models.TransientModel):
     _inherit = 'res.config.settings'
 
     api_key = fields.Char(string='Api Key', config_parameter='ym_sms.api_key')
-    url = fields.Char(string='SMS Endpoint', config_parameter='ym_sms.url')
+    endpoint = fields.Char(string='SMS Endpoint', config_parameter='ym_sms.endpoint')
     sender = fields.Char(string='Sender', config_parameter='ym_sms.sender')
 
     sales_head_contact = fields.Char(string='Sales Team Head', size=10, config_parameter='ym_sms.sales_head_contact')
